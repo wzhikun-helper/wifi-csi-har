@@ -1,0 +1,72 @@
+# Python caches and build artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+/build/
+/dist/
+.coverage
+htmlcov/
+
+# Jupyter checkpoints (keep notebooks)
+.ipynb_checkpoints/
+
+# Local virtual environments
+.venv/
+venv/
+env/
+.conda/
+
+# Logs and temporary files (keep formal CSV results and figures)
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# LaTeX intermediate files (keep .tex, .bib, .sty, .cls, and final .pdf)
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+
+# Raw dataset; processed data requires a separate publication decision
+/data/raw/
+
+# Model weight/checkpoint formats only; keep model directories and source files
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+*.h5
+*.hdf5
+
+# IDE and OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Local secrets; keep a sanitized example if one is added later
+.env
+.env.*
+!.env.example
+*.pem
+*.key
