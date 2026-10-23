@@ -1,0 +1,116 @@
+{
+  "backend": "python/matplotlib",
+  "matplotlib_version": "3.11.1",
+  "numpy_version": "2.4.6",
+  "figure_count": 4,
+  "image_file_count": 12,
+  "formats": [
+    "png",
+    "pdf",
+    "svg"
+  ],
+  "png_dpi": 300,
+  "source_sha256": {
+    "results/formal_seed42/metrics.csv": "c7d46a63a1880d683d0d94e92bf70e1b19ed8a319a3fe487b1a02827d0f292de",
+    "results/formal_seed42/test/predictions.csv": "89996a54ea29f425c7af4e3944c5eb307848642c3b8d2572672fd37cfab66c32",
+    "results/formal_seed42/test/confusion_matrix.csv": "9c0ba8d070d1dc3434edd23ca783430f5009aab32804f69246ab295cd693932c",
+    "results/formal_seed42/test/classification_report.csv": "29f24ae61fe99c98af74b58881d0c5da6b0692711417d8219a5211422423cc6a",
+    "results/formal_seed42/config_snapshot.yaml": "d17bef97b3ccc908230356767e04e4a19f0f7bcc546fa3f0a184647a64e1f16b",
+    "results/formal_seed42/summary.json": "1b500db5ffbe7a5d725f784299f6fc63b6f46b55e74201945f7eee47ea51692d",
+    "results/formal_seed42/status.json": "74eaa32147d04bd815dd7affbbef89231551a70ad266133218dec20335dc5767",
+    "results/formal_seed42/test/test_metrics.json": "5d7c44374417ab59e94e01671d93b9c12b4ca4dad61761ec5da8637717a8f121",
+    "results/formal_seed42/test/evaluation_metadata.json": "0d22850003a58414feedc7f42aa685dca8d26239518f4f26646014d29df5ee0e"
+  },
+  "script_sha256": "c43e9a7bf16e62584788f69ebbddc9cb907fac2b461a905443f80a05c173052b",
+  "configuration": "results/formal_seed42/config_snapshot.yaml",
+  "generation_command": "python -B scripts/make_figures.py",
+  "contracts": [
+    {
+      "figure_id": "loss_curve",
+      "core_claim": "Train loss declines while validation loss rises",
+      "source_csv": "results/formal_seed42/metrics.csv",
+      "outputs": "figures/formal_seed42/loss_curve.png;figures/formal_seed42/loss_curve.pdf;figures/formal_seed42/loss_curve.svg",
+      "script": "scripts/make_figures.py"
+    },
+    {
+      "figure_id": "accuracy_curve",
+      "core_claim": "A training-validation accuracy gap develops",
+      "source_csv": "results/formal_seed42/metrics.csv",
+      "outputs": "figures/formal_seed42/accuracy_curve.png;figures/formal_seed42/accuracy_curve.pdf;figures/formal_seed42/accuracy_curve.svg",
+      "script": "scripts/make_figures.py"
+    },
+    {
+      "figure_id": "confusion_matrix",
+      "core_claim": "Cross-person errors differ by activity",
+      "source_csv": "results/formal_seed42/test/confusion_matrix.csv;results/formal_seed42/test/predictions.csv",
+      "outputs": "figures/formal_seed42/confusion_matrix.png;figures/formal_seed42/confusion_matrix.pdf;figures/formal_seed42/confusion_matrix.svg",
+      "script": "scripts/make_figures.py"
+    },
+    {
+      "figure_id": "per_class_metrics",
+      "core_claim": "Falling leads F1; walking has low recall despite high precision",
+      "source_csv": "results/formal_seed42/test/classification_report.csv;results/formal_seed42/test/predictions.csv",
+      "outputs": "figures/formal_seed42/per_class_metrics.png;figures/formal_seed42/per_class_metrics.pdf;figures/formal_seed42/per_class_metrics.svg",
+      "script": "scripts/make_figures.py"
+    }
+  ],
+  "statistics": {
+    "train_samples": 1400,
+    "val_samples": 280,
+    "test_samples": 560,
+    "epochs": 26,
+    "selected_epoch": 16,
+    "seeds": 1,
+    "intervals": "none; single seed and fixed split; samples are clustered by participant/environment"
+  },
+  "checks": {
+    "prediction_report_matrix_consistency": true,
+    "all_26_epoch_points_used": true,
+    "artist_values_match_csv": true,
+    "text_within_canvas": true,
+    "source_files_unchanged": true,
+    "png_integrity_and_dpi": true,
+    "svg_text_and_pdf_embedded_fonts": true,
+    "manual_visual_review": true
+  },
+  "visual_review": {
+    "status": "passed",
+    "reviewed_pngs": [
+      "loss_curve.png",
+      "accuracy_curve.png",
+      "confusion_matrix.png",
+      "per_class_metrics.png"
+    ],
+    "findings": "All four actual PNGs reviewed: fonts legible, labels and captions complete, no overlap or truncation; epoch 16 marked on both curves; metric axes use percent; heatmap uses counts.",
+    "four_axis_review": {
+      "depth": "Observed generalization gap and class-specific failure are annotated; no causal claim is inferred from the plots.",
+      "elegance": "Four single-purpose figures; consistent labels, palette and hierarchy.",
+      "integrity": "All 26 epochs and all 560 test predictions retained; no invented uncertainty; source/artist counts checked.",
+      "legibility": "Redundant markers/linestyles and bar hatches; seven activity names fit; editable vector text."
+    }
+  },
+  "output_sha256": {
+    "figures/formal_seed42/loss_curve.png": "9d155550e7fe990aee7a662278dc63bbaa8be405f75483a9846e887b6d2414d6",
+    "figures/formal_seed42/loss_curve.pdf": "d45bd6533c81657e595d42514da849dd10eccefec11d169c844a5c8db0766401",
+    "figures/formal_seed42/loss_curve.svg": "db3921a03ebc9c43129243335aad57a08d2bfbaa066735d86dc15792ee8b4375",
+    "figures/formal_seed42/accuracy_curve.png": "b283889f6e43939a0b290c35abe1eaa676cc8dc0f072e6816292a1aa3ecb9870",
+    "figures/formal_seed42/accuracy_curve.pdf": "c18392cb619b779422e1aabb27ac3491f5f549d1e4979743cc5b22990d2b5330",
+    "figures/formal_seed42/accuracy_curve.svg": "b1ff14b6caf8a0fcd54592af955d09309645fd1469b2471aedb7e5508a113557",
+    "figures/formal_seed42/confusion_matrix.png": "2de5e3d9577409e1d27367229ee8eb04642a22b5927a902ebbe08eef0659ee41",
+    "figures/formal_seed42/confusion_matrix.pdf": "488d7161d536ce2dd17f6c9b6e4fc2be92e359eee8c40d26186f463022219b42",
+    "figures/formal_seed42/confusion_matrix.svg": "7a698b4144ee3c9c57a2dbc3adc3aa384a6909173369ca60e01e2967b374ae63",
+    "figures/formal_seed42/per_class_metrics.png": "c6e080b094b890291113a59d3a7e2e8f8e44419d1682516eec6d94202c30e31a",
+    "figures/formal_seed42/per_class_metrics.pdf": "3055e88a3f01ac24d2c9d6e460c4dfb40b63f742e265d393b3ea1d83aca9e314",
+    "figures/formal_seed42/per_class_metrics.svg": "a65ffa50fe90a68062f580c527fc301809dcd20145d5c3e19fad59552ec89b1f"
+  },
+  "analysis_path": "results/formal_seed42/analysis.md",
+  "analysis_sha256": "9e69ad756bb88859f5535b3786215ca1521ea6ca0ad5e4d7c1b76af6c1a35530",
+  "static_preflight": {
+    "passed": 12,
+    "warnings": [
+      "300 dpi PNG preview rather than 600 dpi submission raster",
+      "No TIFF: PDF/SVG supplied as vector masters; no target journal submission specified"
+    ],
+    "failures": 0
+  }
+}

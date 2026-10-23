@@ -1,0 +1,167 @@
+{
+  "samples": 560,
+  "accuracy": 0.2642857142857143,
+  "macro_f1": 0.257180753398113,
+  "labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "class_names": [
+    "running",
+    "falling",
+    "walking",
+    "turning",
+    "jumping",
+    "squatting",
+    "waving"
+  ],
+  "zero_division": 0,
+  "confusion_matrix_orientation": "rows=true, columns=predicted",
+  "confusion_matrix": [
+    [
+      25,
+      28,
+      0,
+      9,
+      5,
+      0,
+      13
+    ],
+    [
+      11,
+      47,
+      0,
+      1,
+      4,
+      0,
+      17
+    ],
+    [
+      3,
+      2,
+      3,
+      13,
+      33,
+      3,
+      23
+    ],
+    [
+      4,
+      3,
+      0,
+      19,
+      25,
+      5,
+      24
+    ],
+    [
+      0,
+      4,
+      0,
+      29,
+      12,
+      18,
+      17
+    ],
+    [
+      3,
+      0,
+      0,
+      32,
+      19,
+      11,
+      15
+    ],
+    [
+      6,
+      0,
+      0,
+      11,
+      28,
+      4,
+      31
+    ]
+  ],
+  "per_class": [
+    {
+      "label": 0,
+      "activity_id": 1,
+      "activity_name": "running",
+      "precision": 0.4807692307692308,
+      "recall": 0.3125,
+      "f1": 0.3787878787878788,
+      "support": 80
+    },
+    {
+      "label": 1,
+      "activity_id": 2,
+      "activity_name": "falling",
+      "precision": 0.5595238095238095,
+      "recall": 0.5875,
+      "f1": 0.573170731707317,
+      "support": 80
+    },
+    {
+      "label": 2,
+      "activity_id": 3,
+      "activity_name": "walking",
+      "precision": 1.0,
+      "recall": 0.0375,
+      "f1": 0.07228915662650602,
+      "support": 80
+    },
+    {
+      "label": 3,
+      "activity_id": 4,
+      "activity_name": "turning",
+      "precision": 0.16666666666666666,
+      "recall": 0.2375,
+      "f1": 0.1958762886597938,
+      "support": 80
+    },
+    {
+      "label": 4,
+      "activity_id": 5,
+      "activity_name": "jumping",
+      "precision": 0.09523809523809523,
+      "recall": 0.15,
+      "f1": 0.11650485436893204,
+      "support": 80
+    },
+    {
+      "label": 5,
+      "activity_id": 6,
+      "activity_name": "squatting",
+      "precision": 0.2682926829268293,
+      "recall": 0.1375,
+      "f1": 0.18181818181818182,
+      "support": 80
+    },
+    {
+      "label": 6,
+      "activity_id": 7,
+      "activity_name": "waving",
+      "precision": 0.22142857142857142,
+      "recall": 0.3875,
+      "f1": 0.2818181818181818,
+      "support": 80
+    }
+  ],
+  "per_participant": {
+    "7": {
+      "samples": 280,
+      "accuracy": 0.2392857142857143,
+      "macro_f1": 0.22631307172592677
+    },
+    "8": {
+      "samples": 280,
+      "accuracy": 0.2892857142857143,
+      "macro_f1": 0.2478320244640227
+    }
+  }
+}

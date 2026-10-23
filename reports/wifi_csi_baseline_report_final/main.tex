@@ -1,0 +1,246 @@
+\documentclass[UTF8,zihao=-4,fontset=none]{ctexart}
+% Platform-specific font choices are optional; the report body is unchanged.
+\input{font_config.tex}
+\usepackage[a4paper,left=23mm,right=23mm,top=22mm,bottom=22mm,headheight=15pt]{geometry}
+\usepackage{amsmath,graphicx,booktabs,array,caption,subcaption,fancyhdr,xcolor,needspace,placeins,siunitx,tikz,xurl,hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!45!black,urlcolor=blue!45!black,pdftitle={ESP-Fi HAR 跨人员动作识别基线实验报告},pdfauthor={wifi-csi-har project}}
+\graphicspath{{assets/}{../../figures/formal_seed42/}}
+\captionsetup{font=small,labelfont=bf,labelsep=quad,skip=6pt,justification=justified,singlelinecheck=false}
+\captionsetup[table]{position=top,hypcap=false}
+\captionsetup[subfigure]{font=small,labelfont=bf,justification=centering}
+\sisetup{detect-all,group-digits=false,table-number-alignment=center}
+\setlength{\textfloatsep}{12pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+\setlength{\floatsep}{10pt plus 2pt minus 2pt}
+\renewcommand{\topfraction}{0.9}\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.8}
+\raggedbottom
+\setlength{\parskip}{2pt}
+\setlength{\emergencystretch}{4em}
+\linespread{1.18}
+\ctexset{section={format=\large\sffamily\bfseries,beforeskip=12pt,afterskip=6pt},subsection={format=\normalsize\sffamily\bfseries,beforeskip=8pt,afterskip=4pt}}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small ESP-Fi HAR 跨人员识别基线}
+\fancyhead[R]{\small Seed 42 / 正式实验}
+\fancyfoot[C]{\small\thepage}
+\fancypagestyle{plain}{\fancyhf{}\fancyhead[L]{\small ESP-Fi HAR 跨人员识别基线}\fancyhead[R]{\small Seed 42 / 正式实验}\fancyfoot[C]{\small\thepage}}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.18}
+\input{report_data.tex}
+\newcommand{\figblock}[4]{
+\par
+\begin{figure}[!htbp]\centering\includegraphics[trim=0 39bp 0 22bp,clip,width=#1\linewidth]{#2}\caption{#3}\label{#4}\end{figure}}
+\newcommand{\cmblock}[2]{
+\par
+\begin{figure}[!htbp]\centering\includegraphics[trim=0 52bp 0 22bp,clip,width=0.81\linewidth]{confusion_matrix.pdf}\caption{#1}\label{#2}\end{figure}}
+\newcommand{\nextsection}{\FloatBarrier\Needspace{5\baselineskip}}
+% Keep running heads consistent on automatically broken pages.
+\AddToHook{cmd/@outputpage/before}{\thispagestyle{fancy}}
+\begin{document}
+\begin{center}
+{\LARGE\sffamily\bfseries Wi-Fi CSI 跨人员动作识别\\[5pt]基线实验报告}\par
+\vspace{5pt}{\large ESP32 / ESP-Fi HAR / LightweightCNN}\par
+\vspace{4pt}{\small 一次固定划分、单一随机种子的冻结实验}
+\end{center}
+\noindent\textbf{摘要}\quad
+本实验研究模型未见过某位参与者时，能否仅依据 Wi-Fi CSI 幅度序列识别其动作。
+使用 ESP-Fi HAR 的七类动作数据，固定 P1--P5 训练、P6 验证、P7--P8 测试。
+仅训练集拟合通道标准化，采用 35,655 参数的一维卷积网络。
+正式训练完成\ActualEpochs{}轮并早停，按预设验证规则选定第\BestEpoch{}轮；
+Val Accuracy 为\ValAcc{}，Test Accuracy 为\TestAcc{}、Macro-F1 为\TestFOne{}。
+当前基线跨人员表现有限，结果不构成跨环境泛化或真实部署能力的证据。
+
+\noindent\textbf{关键词}\quad Wi-Fi CSI；跨人员动作识别；1D CNN；训练集标准化；ESP-Fi HAR
+
+\nextsection
+\section{研究问题与数据集}
+CSI 描述无线传播信道的状态。本项目直接读取作者提供的幅度变量\texttt{CSIamp}，不处理相位。
+数据来源及编号约定参照作者仓库\cite{espfi}，CSI 的基本表示参照官方文档\cite{espcsi}。
+人体运动可能改变反射和遮挡，但本实验没有对具体传播因素做独立因果验证。
+
+本地审计确认有 2,240 对 MAT/CSV 样本，四个环境各 560 对：走廊、办公室、会议室、实验室。
+七类动作为跑步、跌倒、行走、转身、跳跃、下蹲、挥手。
+文件名\texttt{X-Y-Z-M}依次表示环境、人员、动作和重复编号。
+单个 MAT 数组形状为\texttt{(950,52)}，分别作为时间位置和幅度通道使用；
+仅凭形状不能推出采样率、持续时间或具体子载波频率。
+MAT 和 CSV 是配对文件，不能将其算成 4,480 个独立样本。
+
+\nextsection
+\section{固定跨人员划分与隔离}
+\begin{center}\begin{minipage}{\linewidth}\centering\small
+\captionof{table}{固定人员划分。所有集合均包含四个环境和七类动作。}
+\begin{tabular}{llrl}\toprule
+集合 & 参与者 & 样本数 & 用途\\\midrule
+Train & P1--P5 & 1400 & 拟合标准化、更新模型权重\\
+Validation & P6 & 280 & 选择 checkpoint、早停\\
+Test & P7--P8 & 560 & 模型冻结后一次正式测试\\\bottomrule
+\end{tabular}\end{minipage}\end{center}
+划分来自冻结的\texttt{dataset\_split.csv}，人员集合互不重叠，不随机重划分。
+训练的 shuffle 只改变训练样本顺序。
+P6 指标参与选模，不属于独立的最终测试；P7--P8 未用于拟合或选模。
+四个环境均出现于各集合，因此这里不是留一环境实验。
+
+\FloatBarrier\Needspace{13\baselineskip}
+\section{训练集通道标准化}
+只用 P1--P5 的全部 1400 个样本，在每个通道上合并 950 个时间位置，
+每通道统计 $1400\times950=1{,}330{,}000$ 个值。
+使用 float64 分块累积计算均值 $\mu_c$ 和总体标准差 $\sigma_c$（ddof=0），输入变换为
+\begin{equation}\label{eq:normalization}
+\begin{alignedat}{2}
+z_{c,t}&=\frac{x_{c,t}-\mu_c}{s_c}, &\qquad s_c&=
+\begin{cases}
+1,        & \sigma_c<10^{-8},\\[4pt]
+\sigma_c, & \sigma_c\geq10^{-8}.
+\end{cases}
+\end{alignedat}
+\end{equation}
+本次没有近零标准差通道。52 通道均值范围为\MeanRange{}，
+标准差范围为\StdRange{}。这些是训练集统计，不是测试指标。
+
+三个集合共用\path{csi_normalizer.npz}，不分别拟合。
+标准化后返回 float32；原始 MAT 不变。
+
+\nextsection
+\section{LightweightCNN 结构与参数核算}
+Dataset 按样本读取数据\cite{pytorchdata}，将\texttt{(950,52)}转置为\texttt{(52,950)}，标签从 1--7 减一到 0--6。
+Batch 为\texttt{(B,52,950)}，最终输出\texttt{(B,7)} logits，不在损失前加 Softmax\cite{pytorchloss}。
+\begin{center}\begin{minipage}{\linewidth}\centering\small
+\captionof{table}{唯一基线模型。参数量已与实际 PyTorch 模型逐层核对。}
+\begin{tabular}{lll S[table-format=5.0]}\toprule
+层 & 主要设置 & 输出形状（省略 B） & {参数量}\\\midrule
+Conv1d + ReLU & 52$\to$64，核3，padding1 & $(64,950)$ & 10048\\
+MaxPool1d & 核2 & $(64,475)$ & 0\\
+Conv1d + ReLU & 64$\to$128，核3，padding1 & $(128,475)$ & 24704\\
+AdaptiveAvgPool1d & 输出长度1 & $(128,1)$ & 0\\
+Flatten & 保留 Batch 轴 & $(128)$ & 0\\
+Linear & 128$\to$7 & $(7)$ & 903\\\midrule
+合计 & & & {\textbf{35,655}}\\\bottomrule
+\end{tabular}\end{minipage}\end{center}
+核算为 $(52\times3+1)\times64=10{,}048$，
+$(64\times3+1)\times128=24{,}704$，$(128+1)\times7=903$，加和正确。
+
+图\ref{fig:architecture}中，两次卷积沿时间提取特征，最大池化减半时间长度，
+全局平均池化将时间轴压缩为1，最后线性层输出七类 logits。
+
+\par
+\begin{figure}[!htbp]\centering
+\input{architecture.tex}
+\caption{LightweightCNN 的张量流。横向为时间轴，叠层表示通道；仅示意结构，不代表实际信号或等比例几何。省略 Batch 轴，全部维度来自 \texttt{src/model.py}。}
+\label{fig:architecture}
+\end{figure}
+\par
+
+\nextsection
+\section{训练配置及早停规则}
+Seed=42，Batch Size=32，Adam，学习率0.001，weight decay=0，CrossEntropyLoss；
+GPU 为 NVIDIA GeForce RTX 3060 Laptop GPU。上限40轮，patience=10，无超参数搜索。
+每轮44次训练更新；验证使用\texttt{eval()}和\texttt{no\_grad()}，不更新权重。
+以 Val Accuracy 优先、相同时 Val Loss 更低选模；完全相同不算改善。
+第16轮之后连续10轮未改善，第26轮早停，共1,144次更新。Smoke Test 不计入正式结果。
+
+\nextsection
+\section{完整训练过程与验证选择}
+图\ref{fig:training}保留全部26轮原始记录点，不平滑、不插值补点。
+两幅子图共用 Seed 42、训练 n=1400、验证 n=280；竖线标出按验证规则选中的第16轮。
+
+最佳轮 Train Loss=\BestTrainLoss{}，Train Accuracy=\BestTrainAcc{}，Val Loss=\ValLoss{}；
+末轮 Train/Val Accuracy=\FinalTrainAcc{}/\FinalValAcc{}，泛化差距明显。
+
+
+\par
+\begin{figure}[!htbp]\centering
+\begin{subfigure}{0.80\linewidth}\centering
+\includegraphics[trim=0 39bp 0 22bp,clip,width=\linewidth]{loss_curve.pdf}
+\caption{交叉熵损失：训练下降，验证总体上升。}\label{fig:loss}
+\end{subfigure}\par\vspace{4pt}
+\begin{subfigure}{0.80\linewidth}\centering
+\includegraphics[trim=0 39bp 0 22bp,clip,width=\linewidth]{accuracy_curve.pdf}
+\caption{准确率（\%）：训练与验证差距扩大。}\label{fig:acc}
+\end{subfigure}
+\caption{完整26轮训练与验证记录。最佳验证准确率为\ValAcc{}；训练准确率按各 Batch 更新时的预测累计。单一随机种子，无重复实验置信区间。}
+\label{fig:training}
+\end{figure}
+\par
+
+\nextsection
+\section{冻结模型的正式测试}
+只使用第16轮 checkpoint；不使用第26轮或根据测试表现重新选模。
+以固定标准化参数、\texttt{eval()}和\texttt{no\_grad()}遍历 P7--P8 共560个样本一次。
+\begin{center}\begin{minipage}{\linewidth}\centering
+\captionof{table}{冻结测试结果。Macro-F1 等权平均全部七类，零分母按0处理。}
+\begin{tabular}{lr}\toprule
+评价指标 & 正式结果\\\midrule
+Test Accuracy & \textbf{\TestAcc{}}（148/560）\\
+Test Macro-F1 & \textbf{\TestFOne{}}\\
+测试样本 / 每类 Support & 560 / 80\\\bottomrule
+\end{tabular}\end{minipage}\end{center}
+\cmblock{正式测试混淆矩阵。行是真实类别，列是预测类别，每格为计数，矩阵总和560；所有数值直接来自冻结预测。}{fig:cm}
+图\ref{fig:cm}显示错误并非均匀分布：walking 经常被预测为 jumping，
+squatting 经常被预测为 turning。该观察描述误分类结构，不能单凭它确定物理成因。
+
+\Needspace{10\baselineskip}
+\section{各类动作表现}
+表\ref{tab:classes}和图\ref{fig:class}同时呈现 Precision、Recall 和 F1，避免只看整体 Accuracy。
+\begin{center}\begin{minipage}{\linewidth}\centering\small
+\captionof{table}{七类动作的正式测试指标，固定标签顺序0--6。}\label{tab:classes}
+\begin{tabular}{l S[table-format=3.2] S[table-format=2.2] S[table-format=2.2] S[table-format=2.0]}\toprule
+动作 & {Precision(\%)} & {Recall(\%)} & {F1(\%)} & {Support}\\\midrule
+\ClassRows\bottomrule
+\end{tabular}\end{minipage}\end{center}
+\figblock{0.88}{per_class_metrics.pdf}{类别差异：falling 的 F1 最高，walking 的 Recall 最低。各类 Support=80；单一冻结模型。}{fig:class}
+falling 的 F1 为0.573171，walking 为0.072289。walking 的 Precision=100\% 仅基于3个预测，Recall=3.75\%。高 Precision 不意味着高覆盖率：
+walking 预测虽少而正确，却漏掉多数真实 walking。
+上述结果来自单一冻结模型，没有跨 seed 或划分的误差条。
+
+\Needspace{8\baselineskip}
+\section{人员差异与主要错误}
+\begin{center}\begin{minipage}{\linewidth}\centering\small
+\captionof{table}{P7/P8 的辅助分析，不用于重新选择模型或预处理。}
+\begin{tabular}{lrrr}\toprule
+人员 & 样本数 & Accuracy & Macro-F1\\\midrule
+\ParticipantRows\bottomrule
+\end{tabular}\end{minipage}\end{center}
+P8 Accuracy 比 P7 高5个百分点，但不能据此认为所有动作均更容易识别，
+也不能声称差异具有统计显著性。合并 Macro-F1 不等于两位人员 Macro-F1 的简单平均。
+\begin{center}\begin{minipage}{\linewidth}\centering\small
+\captionof{table}{主要非对角错误；比例以每个真实类别的80个样本为分母。}
+\begin{tabular}{lrr}\toprule
+真实$\rightarrow$预测 & 数量 & 真实类别内比例\\\midrule
+\ErrorRows\bottomrule
+\end{tabular}\end{minipage}\end{center}
+
+\Needspace{5\baselineskip}
+\section{实验局限与结论}
+\textbf{观察事实：}训练 Loss 从1.936258降至\FinalTrainLoss{}，
+末轮 Val Loss 升至\FinalValLoss{}；训练表现改善未同步转化为验证表现改善。
+这些记录支持过拟合或跨人员泛化不足的判断，而不是良好泛化收敛。
+
+\textbf{可能原因：}动作执行习惯、传播条件差异和有限训练人员可能带来分布偏移；
+轻量网络及时间平均池化也可能限制表达能力。但本实验没有相应对照，
+不能将其中任何一项写成已证实的因果解释。
+
+\textbf{解释边界：}只有一个 seed、一次划分、两名测试人员；同一人员和环境内样本相关，
+不能把560个样本视为560名独立人员。P6参与选模，且四环境均进入各集合。
+未验证跨环境留出、在线实时识别、硬件迁移或真实部署可靠性。
+
+\textbf{结论：}该实验建立了可追溯的幅度1D CNN跨人员基线，测试结果为\TestAcc{}和\TestFOne{}。
+工程流程可复现不等于识别能力理想；当前泛化表现有限。
+结果已经冻结，本报告不进行第二次训练、测试或调参。
+
+\Needspace{5\baselineskip}
+\section{来源审计与参考资料}
+本报告沿用冻结结果；完整 SHA256 与工程记录保留于既有 provenance 文件。
+文献\cite{diversity}仅采用已核实的 arXiv v2，作为背景资料。
+
+\begin{thebibliography}{9}\small
+\setlength{\itemsep}{6pt}\setlength{\parskip}{0pt}
+\setlength{\labelsep}{0.6em}
+\setlength{\leftmargin}{2em}\setlength{\itemindent}{0pt}
+\raggedright\urlstyle{same}\Urlmuskip=0mu plus 2mu\relax
+\bibitem{espfi} AutoSmartGroup. ESP-Fi HAR: A Low-Power WiFi CSI Dataset for Ad-Hoc IoT Human Activity Recognition. 作者数据集及代码说明。\url{https://github.com/AutoSmartGroup/ESP-Fi-HAR}.
+\bibitem{diversity} Hongbo Wang, Xin Li, Yinghui He, Jingzhi Hu, Mingming Xu, Zhe Chen, Fu Xiao, Jun Luo. Path to Diversity: A Primer on ISAC-izing Commodity Wi-Fi for Practical Deployments. arXiv:2601.12980v2, 2026. \url{https://arxiv.org/abs/2601.12980v2}.
+\bibitem{espcsi} Espressif Systems. ESP-IDF Programming Guide: Wi-Fi Channel State Information. \url{https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/wifi-driver/wifi-vendor-features.html}.
+\bibitem{pytorchloss} PyTorch. CrossEntropyLoss, PyTorch 2.14 documentation. \url{https://docs.pytorch.org/docs/2.14/generated/torch.nn.CrossEntropyLoss.html}.
+\bibitem{pytorchdata} PyTorch. Datasets and DataLoaders, Learn the Basics. \url{https://docs.pytorch.org/tutorials/beginner/basics/data_tutorial.html}.
+\end{thebibliography}
+\end{document}

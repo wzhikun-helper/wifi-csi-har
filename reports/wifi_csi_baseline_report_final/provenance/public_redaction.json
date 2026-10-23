@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "scope": "Public redaction of two historical compilation documents only. Frozen experiment sources, metrics, figures, model and PDF are unchanged.",
+  "original_hash_meaning": "SHA256 of the exact historical bytes, retained unchanged in historical provenance; originals are kept outside the public repository.",
+  "public_hash_meaning": "SHA256 of the redacted document currently distributed at public_path; not byte-identical to the historical original.",
+  "private_originals_in_public_repository": false,
+  "private_backup_bytes_verified_before_redaction": true,
+  "documents": [
+    {
+      "public_path": "reports/wifi_csi_baseline_report_final/provenance/history/academic/COMPILE.md",
+      "original_sha256": "8f8c0fb643ccf943b51a7e5459b249c2baffbb9e3e8e83927fcaea4d8a9bb7b9",
+      "public_sha256": "3c1f78d8e187250a9f58317771af3f7155e043c164ea4eb122edf5e4f7ebc115",
+      "replacements": [
+        "User-specific Python and Poppler paths replaced with PATH tool names",
+        "Local TeX installation paths replaced with PATH tool names"
+      ],
+      "historical_hash_reference": {
+        "path": "reports/wifi_csi_baseline_report_final/provenance/history/academic/academic_provenance.json",
+        "json_keys": [
+          "source_sha256",
+          "COMPILE.md"
+        ]
+      }
+    },
+    {
+      "public_path": "reports/wifi_csi_baseline_report_final/provenance/step16/COMPILE_before.md",
+      "original_sha256": "77e77919a05b83de8235232deee5202774f8a9c43798c36ecff090ff0f16ea4e",
+      "public_sha256": "11f213b8caed78d8a2f1fceef5c7ba2644153357a90c48b79ccc6dddae71079c",
+      "replacements": [
+        "User-specific Python and Poppler paths replaced with PATH tool names",
+        "Local TeX installation paths replaced with PATH tool names",
+        "Local project directory replaced with a project-relative example"
+      ],
+      "historical_hash_reference": {
+        "path": "reports/wifi_csi_baseline_report_final/final_provenance.json",
+        "json_keys": [
+          "source_sha256",
+          "COMPILE.md"
+        ]
+      }
+    }
+  ]
+}

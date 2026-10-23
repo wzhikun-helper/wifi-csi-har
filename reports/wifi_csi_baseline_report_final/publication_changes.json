@@ -1,0 +1,138 @@
+{
+  "date": "2026-10-23",
+  "authorization": "User explicitly requested only the final report; delete other report versions.",
+  "removed_roots": [
+    "reports/wifi_csi_baseline_report",
+    "reports/wifi_csi_baseline_report_academic",
+    "reports/wifi_csi_baseline_report.pdf",
+    "reports/wifi_csi_baseline_report_academic.pdf"
+  ],
+  "old_report_file_sha256": {
+    "reports/wifi_csi_baseline_report.pdf": "1a93af891cb879ae1b65be080c12f645517fd14a4a34ae9c49cff7b314260c42",
+    "reports/wifi_csi_baseline_report_academic.pdf": "2db3324deed05023ec073e1daf85ec61fe6ab11ff70b4a09e24c79c5dc26c201",
+    "reports/wifi_csi_baseline_report/build_report.py": "33eaab99226799d4e50d1c2d5d41fcaa52ba605066a7191444f440420d3fe071",
+    "reports/wifi_csi_baseline_report/COMPILE.md": "f9f97fd14b80ea9c64498fee62cee85f78a5b49a75babb11fa27d917f483450e",
+    "reports/wifi_csi_baseline_report/main.tex": "4434d8fb51c49b01488c8d57bee11571bf4b69331cb7e4db88c65f9e34c8bf9c",
+    "reports/wifi_csi_baseline_report/QA.md": "6091324821448c63293d109bf640cdafad411725b7f241e41a30448243782059",
+    "reports/wifi_csi_baseline_report/report_data.tex": "67be45a8a663fa8416393a0d23eeb0d46aaf561d5e74db3fd904a4b86eb44e32",
+    "reports/wifi_csi_baseline_report/report_provenance.json": "712cf01bfe09056e77db69d75953905a73de6ba58eaa2320b3241b3330aa990d",
+    "reports/wifi_csi_baseline_report_academic/academic_provenance.json": "9554fae254a6e4bcad5f1316cfeb253b011d6ca254a0e1d6080236e16dcf292b",
+    "reports/wifi_csi_baseline_report_academic/architecture.pdf": "d45367d34e82ddd1b8dfb14bfe6d156ff69df7fa5d8fa27bc38da8defa96697f",
+    "reports/wifi_csi_baseline_report_academic/architecture.png": "614b4a1c929a46903bd9eb2d8a85b9b6a4187b657ce39726b49303af28ead07c",
+    "reports/wifi_csi_baseline_report_academic/architecture.svg": "3664ee7a271502ee345692053a5c8640d68922b8bed9eb0aeb4b10e4462f54e0",
+    "reports/wifi_csi_baseline_report_academic/architecture.tex": "ad0f7e85a6d5d9d487caf59d102e2bbb1cb3d46b2770aeee3e4e38d8460d33bf",
+    "reports/wifi_csi_baseline_report_academic/architecture_contract.md": "25b8426b959c5f91481c58e63bfe8b6ea2f510eb520b548c2a7b5f1bd6985c9e",
+    "reports/wifi_csi_baseline_report_academic/architecture_preview.tex": "5e6424ab2df9f1de8f612bcd96c667b8340224224efceff7eb8e1719dd6f5bc3",
+    "reports/wifi_csi_baseline_report_academic/before_sha256.json": "2656e9f2c5ab59e4977d13607683d6f03b5120068802c118b52ea2546a4471d1",
+    "reports/wifi_csi_baseline_report_academic/COMPILE.md": "8f8c0fb643ccf943b51a7e5459b249c2baffbb9e3e8e83927fcaea4d8a9bb7b9",
+    "reports/wifi_csi_baseline_report_academic/LAYOUT_CHANGES.md": "5635c7873c35d96f5cd94d51c4c00044a221d65a82dee4ec2b0029afc6d0ed30",
+    "reports/wifi_csi_baseline_report_academic/layout_validation.json": "6b00510030481c1101ef6fa46c18288a757e763a76c07899a6b9dcd9c37b5fbf",
+    "reports/wifi_csi_baseline_report_academic/main.tex": "dace7030c7dfcee385fd551f97a27661c958f709d3c44c0e6e96cb62934b32ca",
+    "reports/wifi_csi_baseline_report_academic/report_data.tex": "67be45a8a663fa8416393a0d23eeb0d46aaf561d5e74db3fd904a4b86eb44e32",
+    "reports/wifi_csi_baseline_report_academic/verify_layout.py": "97463b45fe7ddf9b805ad2ce932e15a157c27475b3794025fe5516f58b2a11ce",
+    "reports/wifi_csi_baseline_report/build/main.aux": "2eefaf88a50509c418a9154072baacef642cd656f826b005234c979ed098f909",
+    "reports/wifi_csi_baseline_report/build/main.log": "c07baf2e0e06539526bc6b3f0f6c092eb2599b5f963939351d28eb7dc4e5eed3",
+    "reports/wifi_csi_baseline_report/build/main.out": "67017d67aa7fb9667c63d8cb1cbcbb38588dea6164a0938833b0f23e5d3304b9",
+    "reports/wifi_csi_baseline_report/build/main.pdf": "1a93af891cb879ae1b65be080c12f645517fd14a4a34ae9c49cff7b314260c42",
+    "reports/wifi_csi_baseline_report_academic/build/architecture_preview.aux": "fbabe80c887f95a1ede6847f22dd91b380bda9d17ae8bfaa72e1741b16aa41e9",
+    "reports/wifi_csi_baseline_report_academic/build/architecture_preview.log": "223bdc7367fb583386940c4bf94661fae1718150de9c2d26f620e66a5b84888f",
+    "reports/wifi_csi_baseline_report_academic/build/architecture_preview.pdf": "d45367d34e82ddd1b8dfb14bfe6d156ff69df7fa5d8fa27bc38da8defa96697f",
+    "reports/wifi_csi_baseline_report_academic/build/main.aux": "7bab013a18caadea84e95906be0cf97582304760c7a16fb1cc66f4b32388d9f2",
+    "reports/wifi_csi_baseline_report_academic/build/main.log": "a99016ab142331765f9ea0559eb3955e1920eaf1681f74b1ddf7cd24bf35f18a",
+    "reports/wifi_csi_baseline_report_academic/build/main.out": "67017d67aa7fb9667c63d8cb1cbcbb38588dea6164a0938833b0f23e5d3304b9",
+    "reports/wifi_csi_baseline_report_academic/build/main.pdf": "04248641b70e6575049292103f0f7898623953a43afeeb28424d1e0c137279b8",
+    "reports/wifi_csi_baseline_report_academic/qa/accepted-1.png": "e878c501dcddeac6e1aac68929b3ab14f47cd75b718a81409a31f3c47327ab8c",
+    "reports/wifi_csi_baseline_report_academic/qa/accepted-2.png": "397e9802b9522cf6bf2579a7a015bc56707d7cf9e9a1475a2dfbc33733fd9abc",
+    "reports/wifi_csi_baseline_report_academic/qa/accepted-3.png": "87626604cd1444a97c099468c20c65f8a0445d27fe63f988e05bb98fc85b06c3",
+    "reports/wifi_csi_baseline_report_academic/qa/accepted-4.png": "3da28994e631890c61ebc18dbf2df0f8fd9997a0b68381395b927fcb8a0c105a",
+    "reports/wifi_csi_baseline_report_academic/qa/accepted-5.png": "7048536c8af69fc982cf73f844afe87f07c2d58533993974230fce7a370c32cd",
+    "reports/wifi_csi_baseline_report_academic/qa/accepted-6.png": "af7896418bad880874700690fa3e2daab5cabc2f73c47eb4f92839ddc9a7b634",
+    "reports/wifi_csi_baseline_report_academic/qa/accepted-7.png": "15db297e9175b54c39524581bf6b8e66dd8ec7d7c3faf61494087cc2a1234c06",
+    "reports/wifi_csi_baseline_report_academic/qa/contact.png": "70b97b0a7d37a8b14cf9b95a4d3ab843567960553b86ad47fa3c63e0fc487ed7",
+    "reports/wifi_csi_baseline_report_academic/qa/contact2.png": "609560d72ca0af173780950e0a9a90e5e818ba9206c04b5722f3b34ac35dae72",
+    "reports/wifi_csi_baseline_report_academic/qa/delivery-1.png": "e878c501dcddeac6e1aac68929b3ab14f47cd75b718a81409a31f3c47327ab8c",
+    "reports/wifi_csi_baseline_report_academic/qa/delivery-2.png": "397e9802b9522cf6bf2579a7a015bc56707d7cf9e9a1475a2dfbc33733fd9abc",
+    "reports/wifi_csi_baseline_report_academic/qa/delivery-3.png": "87626604cd1444a97c099468c20c65f8a0445d27fe63f988e05bb98fc85b06c3",
+    "reports/wifi_csi_baseline_report_academic/qa/delivery-4.png": "3da28994e631890c61ebc18dbf2df0f8fd9997a0b68381395b927fcb8a0c105a",
+    "reports/wifi_csi_baseline_report_academic/qa/delivery-5.png": "7048536c8af69fc982cf73f844afe87f07c2d58533993974230fce7a370c32cd",
+    "reports/wifi_csi_baseline_report_academic/qa/delivery-6.png": "af7896418bad880874700690fa3e2daab5cabc2f73c47eb4f92839ddc9a7b634",
+    "reports/wifi_csi_baseline_report_academic/qa/delivery-7.png": "15db297e9175b54c39524581bf6b8e66dd8ec7d7c3faf61494087cc2a1234c06",
+    "reports/wifi_csi_baseline_report_academic/qa/final-1.png": "e878c501dcddeac6e1aac68929b3ab14f47cd75b718a81409a31f3c47327ab8c",
+    "reports/wifi_csi_baseline_report_academic/qa/final-2.png": "6e03b0f4f37c5bb473ba8fa67b4ebcb6c661a72d441c3ae29aeef60dd4151777",
+    "reports/wifi_csi_baseline_report_academic/qa/final-3.png": "4f6f66880afef6711501782cd1e58b49e080f2623534969ac82e1b9c14aaa604",
+    "reports/wifi_csi_baseline_report_academic/qa/final-4.png": "9026f2d4262dcf7fca9a511eb372b46869f8096ff9a2f3435e51e1ab59538155",
+    "reports/wifi_csi_baseline_report_academic/qa/final-5.png": "7b270fdd5955cfc228189620155b059d69e44d28e30242a3d77a284abec639d0",
+    "reports/wifi_csi_baseline_report_academic/qa/final-6.png": "af7896418bad880874700690fa3e2daab5cabc2f73c47eb4f92839ddc9a7b634",
+    "reports/wifi_csi_baseline_report_academic/qa/final-7.png": "15db297e9175b54c39524581bf6b8e66dd8ec7d7c3faf61494087cc2a1234c06",
+    "reports/wifi_csi_baseline_report_academic/qa/final2-1.png": "e878c501dcddeac6e1aac68929b3ab14f47cd75b718a81409a31f3c47327ab8c",
+    "reports/wifi_csi_baseline_report_academic/qa/final2-2.png": "397e9802b9522cf6bf2579a7a015bc56707d7cf9e9a1475a2dfbc33733fd9abc",
+    "reports/wifi_csi_baseline_report_academic/qa/final2-3.png": "87626604cd1444a97c099468c20c65f8a0445d27fe63f988e05bb98fc85b06c3",
+    "reports/wifi_csi_baseline_report_academic/qa/final2-4.png": "4f928bbb1cd82a00ac3fe739c0071bc575a160f1f9233e9e284f9a5c31e3f668",
+    "reports/wifi_csi_baseline_report_academic/qa/final2-5.png": "122da2a5d76b970377e93d43df619e055173cc464ce401ab8bb9005bf986fa27",
+    "reports/wifi_csi_baseline_report_academic/qa/final2-6.png": "af7896418bad880874700690fa3e2daab5cabc2f73c47eb4f92839ddc9a7b634",
+    "reports/wifi_csi_baseline_report_academic/qa/final2-7.png": "15db297e9175b54c39524581bf6b8e66dd8ec7d7c3faf61494087cc2a1234c06",
+    "reports/wifi_csi_baseline_report_academic/qa/page-1.png": "771bbb6e3a569defddb30d149c097331347e1e790e0f7a37dc95f91542b7a89d",
+    "reports/wifi_csi_baseline_report_academic/qa/page-2.png": "94636f409c323bfabadd76de852a7dff6394117e0619a26fd2eb92159943ec9b",
+    "reports/wifi_csi_baseline_report_academic/qa/page-3.png": "1c6b0fc0746ec1c77c6831961fd97b4819154ad4ef2b73ff6cd700babcd89aa4",
+    "reports/wifi_csi_baseline_report_academic/qa/page-4.png": "d27cec92706a919e38b3c10f4d431f9476990d9e3ccd2b96be8cee67ebb210d4",
+    "reports/wifi_csi_baseline_report_academic/qa/page-5.png": "aa0e7e8531a2b8c38be6ac44a9ebabb2dee4f3252af0d9617446df1d3fa76d68",
+    "reports/wifi_csi_baseline_report_academic/qa/page-6.png": "3440e969ddddf9503f865e5bede374f6685ccd887e938c2bbdc2e4f55e35ca16",
+    "reports/wifi_csi_baseline_report_academic/qa/page-7.png": "7032ac8b2feaf292bf862d21e6e5ab9c22acc30ca9d19c4a5ecdb09d90501268",
+    "reports/wifi_csi_baseline_report_academic/qa/page-8.png": "b012574535f49352788a4ca3ce213203464e0978d33c61657dd9655b0cea5d60",
+    "reports/wifi_csi_baseline_report_academic/qa/v2-1.png": "acb4fbc2c78116f56280067ccc06e31a92a146ba58bb3edb5fb6c58afa045fbf",
+    "reports/wifi_csi_baseline_report_academic/qa/v2-2.png": "9e0202d92cfa78f3e46c149b53827b2ad9d56a684ab3a675aff74f6e46f9cda7",
+    "reports/wifi_csi_baseline_report_academic/qa/v2-3.png": "ef85a80a56e47bfa1aa322a844bb7c2f5ed0f67b116ad82835da1ec01c59c727",
+    "reports/wifi_csi_baseline_report_academic/qa/v2-4.png": "fb33401ffb29faf1cc43c7069a056fc63593ebdadc9a98a465c17c4e93d6bdc0",
+    "reports/wifi_csi_baseline_report_academic/qa/v2-5.png": "957f98b87222e7fe25b888dcca23aa921b73082dc0908e8aca067a34468ddd36",
+    "reports/wifi_csi_baseline_report_academic/qa/v2-6.png": "8677c2f6d388f7bb8e3105e31e6cca41ad00b517e5f4ca20041b7ab4bdfc4193",
+    "reports/wifi_csi_baseline_report_academic/qa/v2-7.png": "9694eae8525126a6917e6be3ff9c87998aeb86a696935ff33dec00780a5909dd"
+  },
+  "retained_history": {
+    "reports/wifi_csi_baseline_report/COMPILE.md": {
+      "retained_at": "reports/wifi_csi_baseline_report_final/provenance/history/initial/COMPILE.md",
+      "sha256": "f9f97fd14b80ea9c64498fee62cee85f78a5b49a75babb11fa27d917f483450e"
+    },
+    "reports/wifi_csi_baseline_report/QA.md": {
+      "retained_at": "reports/wifi_csi_baseline_report_final/provenance/history/initial/QA.md",
+      "sha256": "6091324821448c63293d109bf640cdafad411725b7f241e41a30448243782059"
+    },
+    "reports/wifi_csi_baseline_report/report_provenance.json": {
+      "retained_at": "reports/wifi_csi_baseline_report_final/provenance/history/initial/report_provenance.json",
+      "sha256": "712cf01bfe09056e77db69d75953905a73de6ba58eaa2320b3241b3330aa990d"
+    },
+    "reports/wifi_csi_baseline_report_academic/academic_provenance.json": {
+      "retained_at": "reports/wifi_csi_baseline_report_final/provenance/history/academic/academic_provenance.json",
+      "sha256": "9554fae254a6e4bcad5f1316cfeb253b011d6ca254a0e1d6080236e16dcf292b"
+    },
+    "reports/wifi_csi_baseline_report_academic/architecture_contract.md": {
+      "retained_at": "reports/wifi_csi_baseline_report_final/provenance/history/academic/architecture_contract.md",
+      "sha256": "25b8426b959c5f91481c58e63bfe8b6ea2f510eb520b548c2a7b5f1bd6985c9e"
+    },
+    "reports/wifi_csi_baseline_report_academic/before_sha256.json": {
+      "retained_at": "reports/wifi_csi_baseline_report_final/provenance/history/academic/before_sha256.json",
+      "sha256": "2656e9f2c5ab59e4977d13607683d6f03b5120068802c118b52ea2546a4471d1"
+    },
+    "reports/wifi_csi_baseline_report_academic/COMPILE.md": {
+      "retained_at": "reports/wifi_csi_baseline_report_final/provenance/history/academic/COMPILE.md",
+      "sha256": "8f8c0fb643ccf943b51a7e5459b249c2baffbb9e3e8e83927fcaea4d8a9bb7b9"
+    },
+    "reports/wifi_csi_baseline_report_academic/LAYOUT_CHANGES.md": {
+      "retained_at": "reports/wifi_csi_baseline_report_final/provenance/history/academic/LAYOUT_CHANGES.md",
+      "sha256": "5635c7873c35d96f5cd94d51c4c00044a221d65a82dee4ec2b0029afc6d0ed30"
+    },
+    "reports/wifi_csi_baseline_report_academic/layout_validation.json": {
+      "retained_at": "reports/wifi_csi_baseline_report_final/provenance/history/academic/layout_validation.json",
+      "sha256": "6b00510030481c1101ef6fa46c18288a757e763a76c07899a6b9dcd9c37b5fbf"
+    }
+  },
+  "final_pdf_sha256_before": "b61846d000772ddf4a8dc1c3318ab3c01b99bc4e06b4f6dd6d88db87ef5e7839",
+  "frozen_files_changed_before_cleanup": [],
+  "cleanup_status": "completed",
+  "removed_files": 78,
+  "surviving_existing_files_unchanged": 87,
+  "modified_existing_files": [
+    ".gitignore",
+    "README.md"
+  ],
+  "git_index_sha256_before": "f7eea172d8e3a73fea1023a3839f7bbc93bb3411c4ea6939dd4cc7a80f88d63a"
+}

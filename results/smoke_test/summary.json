@@ -1,0 +1,78 @@
+{
+  "run_type": "smoke_test",
+  "formal_experiment": false,
+  "config": {
+    "run_type": "smoke_test",
+    "seed": 42,
+    "device": "cuda",
+    "epochs": 2,
+    "batch_size": 32,
+    "num_workers": 0,
+    "model": "LightweightCNN",
+    "optimizer": "Adam",
+    "learning_rate": 0.001,
+    "weight_decay": 0.0,
+    "loss": "CrossEntropyLoss",
+    "split_csv": "results/dataset_split.csv",
+    "data_root": "data/raw/ESP-Fi_dataset",
+    "normalizer_path": "models/csi_normalizer.npz",
+    "results_dir": "results/smoke_test",
+    "checkpoints_dir": "models/smoke_test",
+    "checkpoint_selection": "val_accuracy_then_lower_val_loss"
+  },
+  "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+  "provenance": {
+    "normalizer_path": "models/csi_normalizer.npz",
+    "normalizer_sha256": "06d6aba2c0f305644829a41b14f7fd978258cb95b2cb83d81aab23cfc46d4b4f",
+    "split_sha256": "dd13135ed003ad62e3978c2d7d1964e6599aa1e3d2d7b4ba92eeb9179e624a51",
+    "protected_file_sha256": {
+      "results/dataset_manifest.csv": "b7b0c2475ff125df157ff7bc9443a18a0e6ce709e28f3dc1a099b5af6beae6a7",
+      "results/dataset_split.csv": "dd13135ed003ad62e3978c2d7d1964e6599aa1e3d2d7b4ba92eeb9179e624a51",
+      "models/csi_normalizer.npz": "06d6aba2c0f305644829a41b14f7fd978258cb95b2cb83d81aab23cfc46d4b4f",
+      "src/model.py": "8132a2afa5cb0747cb2998b344e4cac2ee15f1fe4caa165699b0fd3a3a2a0f81",
+      "src/dataset.py": "41c50a78d1a021dddfa1d7851a05f5d4112e8e62cae458b2b068a87b6c6ad515"
+    },
+    "config_sha256": "1590ed2b3287c0da77d0152772376ee4408c85a4944bb04353fe2d941e620048",
+    "runner_sha256": "939e9ce013c51ff22f4c2f040ad9a94848638459aa87bf365377eb7b217f1d84",
+    "train_participants": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "val_participants": [
+      6
+    ],
+    "test_used": false,
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "pytorch": "2.14.0+cu126",
+    "cuda_build": "12.6"
+  },
+  "epochs_completed": 2,
+  "optimizer_steps": 88,
+  "best_checkpoint": "models/smoke_test/epoch_001.pt",
+  "best_val_metrics": {
+    "loss": 1.958854603767395,
+    "accuracy": 0.12142857142857143,
+    "samples": 280,
+    "parameters_unchanged": true
+  },
+  "checkpoint_reload": {
+    "weights_exact_match": true,
+    "forward_matches": true,
+    "max_logit_difference": 0.0,
+    "epoch": 1
+  },
+  "final_weight_delta_l2": {
+    "conv1.weight": 0.9711844290645714,
+    "conv1.bias": 0.08158046598747584,
+    "conv2.weight": 1.6776021942322368,
+    "conv2.bias": 0.13010217205871769,
+    "classifier.weight": 0.33193534577933825,
+    "classifier.bias": 0.02784399449759051
+  },
+  "all_input_logits_loss_gradients_weights_finite": true,
+  "protected_files_unchanged": true,
+  "test_used": false
+}

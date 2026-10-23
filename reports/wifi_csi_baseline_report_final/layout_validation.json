@@ -1,0 +1,83 @@
+{
+  "status": "PASS",
+  "original_files_byte_unchanged": 131,
+  "prior_build_intermediates_refreshed": [
+    "reports/wifi_csi_baseline_report_academic/build/main.log",
+    "reports/wifi_csi_baseline_report_academic/build/main.pdf"
+  ],
+  "frozen_provenance_inputs_byte_unchanged": 16,
+  "original_pdf_sha256": "1a93af891cb879ae1b65be080c12f645517fd14a4a34ae9c49cff7b314260c42",
+  "new_pdf_sha256": "b61846d000772ddf4a8dc1c3318ab3c01b99bc4e06b4f6dd6d88db87ef5e7839",
+  "new_pdf_bytes": 423148,
+  "pages": [
+    {
+      "page": 1,
+      "characters": 937,
+      "outside_page_safety_area": 0
+    },
+    {
+      "page": 2,
+      "characters": 995,
+      "outside_page_safety_area": 0
+    },
+    {
+      "page": 3,
+      "characters": 816,
+      "outside_page_safety_area": 0
+    },
+    {
+      "page": 4,
+      "characters": 788,
+      "outside_page_safety_area": 0
+    },
+    {
+      "page": 5,
+      "characters": 962,
+      "outside_page_safety_area": 0
+    },
+    {
+      "page": 6,
+      "characters": 1414,
+      "outside_page_safety_area": 0
+    }
+  ],
+  "fonts_embedded": {
+    "/LKPBUU+TimesNewRomanPSMT": true,
+    "/OWOLNR+SimSun": true,
+    "/PVQNYJ+Arial-BoldMT": true,
+    "/VHMSCW+SimHei": true,
+    "/CPQZYA+Consolas": true,
+    "/ESXAWU+TimesNewRomanPS-BoldMT": true,
+    "/AIDWWT+CMR12": true,
+    "/RBNZZL+CMSY10": true,
+    "/BZLWDM+CMMI12": true,
+    "/JWRLCD+CMMI8": true,
+    "/FJGVEY+CMEX10": true,
+    "/MPSJZG+CMSY8": true,
+    "/XXYIOG+CMR8": true,
+    "/FCWXEW+CMR10": true,
+    "/RLYHWI+CMMI10": true,
+    "/INSFII+CMR9": true,
+    "/QXYWBD+CMSY9": true
+  },
+  "pdf_reference_uri_targets": [
+    "https://arxiv.org/abs/2601.12980v2",
+    "https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/wifi-driver/wifi-vendor-features.html",
+    "https://docs.pytorch.org/docs/2.14/generated/torch.nn.CrossEntropyLoss.html",
+    "https://docs.pytorch.org/tutorials/beginner/basics/data_tutorial.html",
+    "https://github.com/AutoSmartGroup/ESP-Fi-HAR"
+  ],
+  "epochs": 26,
+  "best_epoch": 16,
+  "val_accuracy_percent": 27.1429,
+  "test_accuracy_percent": 26.42857142857143,
+  "test_macro_f1": 0.257180753398113,
+  "confusion_matrix_total": 560,
+  "parameters": 35655,
+  "report_data_byte_identical": true,
+  "overfull_boxes": 0,
+  "missing_glyphs": 0,
+  "undefined_references": 0,
+  "hard_pagebreak_commands": 0,
+  "visual_qa": "人工逐页检查记录见 REVISION_LOG.md；自动检查不替代视觉检查"
+}

@@ -1,0 +1,11 @@
+# Frozen provenance hashes exact working-file bytes (including line endings).
+# Disable automatic normalization for source, CSV, JSON, YAML, TeX and binaries.
+# -text preserves readable text diffs; it does not mark these files as binary.
+* -text
+
+# These two already-tracked, non-frozen files previously used LF blobs and
+# CRLF working copies with core.autocrlf=true. Preserve that existing mapping.
+/README.md text eol=crlf
+/.gitignore text eol=crlf
+
+# Never run add --renormalize on frozen evidence. No global config is required.

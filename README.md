@@ -1,198 +1,177 @@
 # ESP32 Wi-Fi CSI Cross-Person HAR Baseline
 
-## 1. 项目简介 / Overview
+基于 ESP-Fi HAR 幅度序列的固定跨人员七分类基线。核心问题：**模型未见过某位参与者时，能否识别其动作？**
 
-基于公开 ESP-Fi HAR 数据集，计划使用 Wi-Fi 信道状态信息（CSI）幅度序列和轻量级 PyTorch 1D CNN，建立七分类人体动作识别（HAR）基线，重点评估跨人员泛化能力。
+A lightweight PyTorch 1D CNN baseline for seven-class, cross-person Wi-Fi CSI activity recognition. The dataset audit, formal training, one frozen test evaluation, figures, notes and final report are complete. Cross-machine reproduction has not been validated.
 
-This project plans to build a seven-class human activity recognition (HAR) baseline using Wi-Fi channel state information (CSI) amplitude sequences from the public ESP-Fi HAR dataset and a lightweight PyTorch 1D CNN, with an emphasis on cross-person generalization.
+## 1. 数据来源与实际结构 / Dataset
 
-目前处于项目初始化阶段；尚未完成数据核查、正式训练或实验评估。本文描述的模型和流程均为计划，不代表已取得实验结果。
+作者仓库：[AutoSmartGroup/ESP-Fi-HAR](https://github.com/AutoSmartGroup/ESP-Fi-HAR)。请通过作者提供的获取方式取得数据，并核对其引用与许可要求；本仓库不分发原始数据，也不提供猜测的直链。
 
-The project is currently being initialized. Data auditing, formal training, and evaluation are pending. The model and workflow below are plans, not completed experimental results.
+本地已核实 **2240 对 MAT/CSV**，不是4480个独立样本。四个环境各560对，8名参与者、7类动作、10次重复。解压后放置为：
 
-## 2. 研究问题与目标 / Research question and objectives
+```text
+data/raw/ESP-Fi_dataset/
+├── EnvironmentNo.1(corridor)/
+├── EnvironmentNo.2（Office）/
+├── EnvironmentNo.3（boardrooms）/
+└── EnvironmentNo.4（laboratory）/
+```
 
-**研究问题：当模型没有见过某位参与者的数据时，能否识别该参与者的动作？**
+保留原有目录名（含全角括号和大小写）。文件名 `X-Y-Z-M.mat` / 同主干CSV分别表示环境、参与者、动作、重复编号。Manifest路径相对于 `data/raw/ESP-Fi_dataset/`，不含本机绝对路径。
 
-**Research question: Can the model recognize activities performed by a participant whose data it has never seen during training?**
+MAT变量 `CSIamp` 的形状为 `(950,52)`，即本项目使用的时间位置×幅度通道。不能由此推断采样率或持续秒数。本实验只读取幅度，不读取或处理相位。
 
-目标是建立可复现的 CSI 幅度处理和 1D CNN 基线，严格按参与者划分数据，并用 Accuracy、Macro-F1 和混淆矩阵评估未见人员上的表现。
+| activity_id | 动作 / Activity | PyTorch标签 |
+|---:|---|---:|
+| 1 | 跑步 / running | 0 |
+| 2 | 跌倒 / falling | 1 |
+| 3 | 行走 / walking | 2 |
+| 4 | 转身 / turning | 3 |
+| 5 | 跳跃 / jumping | 4 |
+| 6 | 下蹲 / squatting | 5 |
+| 7 | 挥手 / waving | 6 |
 
-The objectives are to establish a reproducible CSI amplitude processing and 1D CNN baseline, separate data by participant, and evaluate unseen participants using Accuracy, Macro-F1, and a confusion matrix.
+## 2. 固定协议与方法 / Protocol and method
 
-## 3. 数据集 / Dataset
+| 集合 | 参与者 | 样本数 | 用途 |
+|---|---|---:|---|
+| train | P1–P5 | 1400 | 拟合标准化、更新权重 |
+| val | P6 | 280 | checkpoint选择与早停 |
+| test | P7–P8 | 560 | 模型冻结后的正式评价 |
 
-拟使用公开 ESP-Fi HAR 数据集。下列数值来自任务规划，**均待实际核验**，不能视为数据审计结论：
+人员完全不重叠；各集合均含四环境和七动作。训练shuffle只改变读取顺序，不改变划分。
 
-The public ESP-Fi HAR dataset is the intended data source. The following values come from project planning and **must be verified against the actual dataset**:
+仅用1400个训练样本、每通道合并950个时间位置，以float64累积52通道均值及总体标准差（ddof=0），保存 `models/csi_normalizer.npz`。Train/Val/Test共用这一组固定参数。近零标准差阈值为1e-8，本次没有近零通道。Dataset执行 `(x-mean)/std` 后返回float32 `(52,950)`；Batch为 `(B,52,950)`，标签为int64。
 
-| 规划信息 / Planned property | 预期值 / Expected value | 状态 / Status |
-| --- | --- | --- |
-| 样本数 / Number of samples | 2240 | 待核验 / Unverified |
-| 环境数 / Number of environments | 4 | 待核验 / Unverified |
-| 参与者数 / Number of participants | 8 | 待核验 / Unverified |
-| 单样本维度 / Per-sample dimensions | `1 × 950 × 52` | 待核验 / Unverified |
+唯一 `LightweightCNN`：
 
-维度轴的含义、采样方式、文件格式、人员与动作标签映射、环境分布、缺失与重复样本，以及许可和引用要求均待检查。上述维度不能直接当作 Conv1d 输入布局。数据来源和下载地址尚未核验，因此暂不提供链接。
+```text
+Conv1d(52,64,k=3,padding=1) → ReLU → MaxPool1d(2)
+→ Conv1d(64,128,k=3,padding=1) → ReLU
+→ AdaptiveAvgPool1d(1) → Flatten → Linear(128,7)
+```
 
-Axis meanings, sampling, file formats, participant and activity label mappings, environment distribution, missing or duplicate samples, and license and citation requirements remain to be checked. The expected dimensions must not be treated directly as a Conv1d input layout. No download link is provided until the source is verified.
+参数量 **35,655 = 10,048 + 24,704 + 903**。输出原始logits，交叉熵损失前不加Softmax。
 
-## 4. 七类动作 / Seven activity classes
+## 3. 正式冻结结果 / Frozen results
 
-以下为项目目标类别；正式类别编号、原始标签拼写和具体动作定义以数据核查结果为准。
+| 项目 | 结果 |
+|---|---|
+| Seed / Batch Size | 42 / 32 |
+| 优化器 / 学习率 / weight decay | Adam / 0.001 / 0 |
+| 损失 | CrossEntropyLoss |
+| 最大轮数 / patience | 40 / 10 |
+| 实际训练轮数 | 26，触发早停 |
+| checkpoint规则 | Val Accuracy优先；相同时Val Loss更低 |
+| 最佳Epoch | **16** |
+| 最佳Val Accuracy / Val Loss | **27.1429% / 2.353830** |
+| Test Accuracy | **26.4286%（148/560）** |
+| Test Macro-F1 | **0.257181** |
+| 最佳权重 | `models/formal_seed42/epoch_016.pt` |
+| 原运行GPU | NVIDIA GeForce RTX 3060 Laptop GPU |
 
-These are the target classes. Numeric IDs, original label spellings, and precise activity definitions will be confirmed during the data audit.
+测试结果已冻结，不因分数低而重选模型、重拟合标准化或重测。训练集表现改善、验证表现不足，存在明显泛化差距。
 
-| 中文 | English | 说明 / Description |
-| --- | --- | --- |
-| 跑步 | Running | 跑步动作 / Running activity |
-| 跌倒 | Falling | 跌倒动作 / Falling activity |
-| 行走 | Walking | 行走动作 / Walking activity |
-| 转身 | Turning | 身体转向 / Body turning |
-| 跳跃 | Jumping | 跳跃动作 / Jumping activity |
-| 下蹲 | Squatting | 下蹲动作 / Squatting activity |
-| 挥手 | Hand waving | 挥手动作 / Hand-waving activity |
+- 正式训练记录：`results/formal_seed42/metrics.csv`（26轮）。
+- 正式测试：`results/formal_seed42/test/` 下的 `test_metrics.json`、`predictions.csv`、`confusion_matrix.csv`、`classification_report.csv`、`evaluation_metadata.json`。
+- 四张正式图：`figures/formal_seed42/`（每张PNG/PDF/SVG）。
+- 分析：`results/formal_seed42/analysis.md`。
+- 唯一保留的报告：[最终PDF](reports/wifi_csi_baseline_report_final.pdf)；可编辑源码及发布说明：[报告目录](reports/wifi_csi_baseline_report_final/RELEASE.md)。
 
-## 5. 固定跨人员协议 / Fixed cross-person protocol
+`configs/baseline.yaml` 是 **2 Epoch Smoke Test**，输出在 `results/smoke_test/` 和 `models/smoke_test/`；`configs/formal_seed42.yaml` 才是正式配置。两者指标不能混用。正式模型只在验证改善时保存，因此没有Epoch26权重并非文件缺失。
 
-| 数据子集 / Split | 参与者 / Participants | 用途 / Purpose |
-| --- | --- | --- |
-| 训练集 / Training | P1–P5 | 拟合模型和预处理统计量 / Fit the model and preprocessing statistics |
-| 验证集 / Validation | P6 | 选择超参数与检查点 / Select hyperparameters and checkpoints |
-| 测试集 / Test | P7–P8 | 最终评估未见人员 / Final evaluation on unseen participants |
+## 4. 环境准备 / Environment
 
-人员标签须先与原始数据对应。所有来自同一参与者的样本和派生窗口必须保留在同一子集中。归一化等需要拟合的统计量仅使用训练集估计；不得用测试集选择模型、阈值或超参数。该协议是跨人员评估，不能自动解释为跨环境评估。
+`environment.yml` 记录实测直接依赖，不包含本机prefix，不是已求解的跨平台锁文件。Python为conda-forge构建的3.11.16；核心科学计算包由pip安装。无须为本项目额外引入torchvision或torchaudio，代码未导入它们。
 
-Participant identifiers must first be mapped to the source data. All samples and derived windows from a participant must stay in the same split. Fit normalization and other learned preprocessing statistics on training data only. Do not use the test set to select models, thresholds, or hyperparameters. This is a cross-person protocol and does not by itself establish cross-environment generalization.
+PyTorch实测 `2.14.0+cu126`、CUDA构建12.6，安装器记录为pip；原始安装索引和原轮子哈希没有保留。YAML选择当前可核实的[官方cu126索引](https://download.pytorch.org/whl/cu126/torch/)，其中有该版本的cp311 Windows x64轮子。这是可用来源核对，**不是对原安装来源的追溯证明，也不是安装成功验证**。
 
-## 6. 基线方法 / Baseline method
+准备顺序：
 
-计划从 CSI 中提取幅度，核实时间轴和子载波轴后，将输入转换为 PyTorch Conv1d 所需的 `(batch, channels, length)`。以子载波作为通道、沿时间轴卷积是待验证的候选布局。
+1. 使用可用的Conda工具读取YAML，在独立环境中准备Python及pip依赖；不要覆盖正在使用的原环境。
+2. 若YAML无法解析CUDA轮子，停止并从已核实的官方来源取得精确的 `torch==2.14.0+cu126`、Python 3.11、Windows x64轮子，再单独安装；不得静默替换CPU版或其他版本。
+3. 核对驱动、PyTorch版本和CUDA可用性。训练和评价默认请求CUDA，也支持显式CPU或已记录的CPU回退；不再限制GPU型号。不同硬件的完整训练结果尚未验证，不保证逐位相同。
+4. 本次未安装依赖、未求解环境、未异机验证，因此不提供冒充已验证的环境创建命令。
 
-The plan is to extract CSI amplitude, verify the time and subcarrier axes, and convert inputs to the PyTorch Conv1d layout `(batch, channels, length)`. Treating subcarriers as channels and convolving over time is a candidate layout to be validated.
+YAML中的 `pypdf==6.10.0`、`pdfplumber==0.11.9` 来自独立报告解释器的实测信息，原 `wifi-csi` 环境未安装这两个包。Notebook/JupyterLab用于学习，九个实验脚本均可脱离Notebook运行。
 
-候选模型为少量 Conv1d 特征提取层、非线性激活、时间池化和七分类输出层。具体层数、通道数、卷积核、正则化、损失函数、优化器和训练参数尚未确定；后续以固定配置和代码记录。当前尚无模型实现或训练完成的权重。
+PDF系统工具另行准备：XeLaTeX、ctex、相关LaTeX宏包、现有源码指定的宋体/黑体/Times New Roman/Arial/Consolas，以及Poppler页面渲染工具；不包含在Conda YAML中。源码使用可选Windows字体路径及Noto/Fandol回退；本阶段不重编正式PDF，跨系统编译尚待验证。
 
-The candidate model uses a small number of Conv1d feature extraction layers, nonlinear activations, temporal pooling, and a seven-class output layer. Layer counts, channel widths, kernels, regularization, loss function, optimizer, and training settings are pending and will be recorded in code and fixed configurations. No model implementation or trained weights currently exist.
+## 5. 脚本职责与执行顺序 / Workflow
 
-## 7. 评价指标 / Evaluation metrics
+以下从项目根目录运行。表中的历史执行形式对应本项目已完成阶段，本次发布维护没有重复训练或评价。**已有结果会被保护：有的脚本仅接受完全相同的旧输出，其余会拒绝覆盖；不是可在当前归档目录连续重跑的一键命令。**
 
-- **Accuracy**：正确分类样本占全部样本的比例。 / Fraction of samples classified correctly.
-- **Macro-F1**：分别计算七类的 F1，再等权平均；固定包含全部七类，并明确零分母处理。 / Unweighted mean of per-class F1 over all seven classes, with explicit handling of zero denominators.
-- **混淆矩阵 / Confusion matrix**：固定类别顺序，记录真实类别与预测类别的计数；若提供归一化版本，标明归一化方向。 / Counts of true versus predicted classes in a fixed class order; any normalized version must state its normalization axis.
+| 顺序 | 已有脚本 / 历史执行形式 | 职责与边界 |
+|---:|---|---|
+| 1 | `python -B scripts/build_manifest.py` | 按真实MAT文件名建立2240行清单并配对CSV；不读数组；已有输出相同才接受 |
+| 2 | `python -B scripts/create_split.py` | 按人员增加split列，不随机重划分；已有输出不同则拒绝 |
+| 3 | `python -B scripts/check_dataloader.py` | 读取真实单样本及Batch，检查shape/标签；会读取test样本，属于早期功能检查，不是正式准确率评价 |
+| 4 | `python -B scripts/check_model.py` | 真实train Batch前向/反向功能检查，无参数更新 |
+| 5 | `python -B scripts/check_numerics.py` | train Batch原尺度诊断；可用已有 `--normalizer` 参数检查标准化后尺度 |
+| 6 | `python -B scripts/fit_normalizer.py` | 只用train拟合固定参数；已存在normalizer时拒绝覆盖 |
+| 7 | `python -B scripts/run_experiment.py --config configs/baseline.yaml` | 2轮GPU Smoke Test；已有输出时停止 |
+| 8 | `python -B scripts/run_experiment.py --config configs/formal_seed42.yaml` | 固定正式训练；已有输出时停止 |
+| 9 | `scripts/evaluate.py`（历史正式测试入口） | 当前必须显式指定新输出；默认选用Epoch16，原正式测试目录永不写入 |
+| 10 | `python -B scripts/make_figures.py` | 从冻结CSV/JSON绘图，无MAT/网络推理；默认已有图表时停止 |
 
-正式指标、类别顺序、评估样本数和实验配置将在后续记录。当前没有任何实验指标或模型优劣结论。
+独立复现入口现已补齐，冻结配置不改动；`--output-dir` 仅改变本次输出位置，训练权重保存到该目录的 `checkpoints/`。已有目录（即使为空）一律拒绝；原正式结果和模型目录始终受保护。
 
-Metrics, class order, evaluation sample counts, and experimental settings will be recorded later. No experimental scores or comparative model claims are available yet.
+本阶段实际执行通过的无训练/无推理预检：
 
-## 8. 目录结构 / Project structure
+```powershell
+python -B scripts/run_experiment.py --config configs/formal_seed42.yaml --output-dir results/reproduction_check --device cpu --dry-run
+python -B scripts/evaluate.py --output-dir results/reproduction_eval --checkpoint models/formal_seed42/epoch_016.pt --device cpu --check-only
+python -B -m unittest discover -s tests -v
+```
+
+`--device cuda:N` 可选择GPU；CUDA不可用默认报错，只有 `--device cpu` 或 `--allow-cpu-fallback` 显式允许使用CPU。实际设备、GPU名称、PyTorch版本及回退状态写入运行来源记录，不能把CPU运行当作GPU结果。
+
+上述预检不创建结果目录，不构造真实Dataset，不训练或推理。去掉预检开关才会进入真实运行，本阶段未执行。评价自己的复现模型还需 `--training-summary` 指向该训练运行的summary，checkpoint必须与其验证选模记录一致，不允许根据test表现任意替换。
+
+## 6. 无原始数据的复现边界 / Without raw data
+
+**可以做：** 阅读CSV、分析、笔记及PDF；核验已归档文件SHA256；使用固定数据片段、排版图副本和系统工具重编PDF。绘图逻辑不读MAT，可利用冻结预测和训练记录重建图表，但还要求Manifest/Split、normalizer及相关源码通过来源校验，并须选择不存在的新输出位置。
+
+**不能做：** 重新建立真实数据清单、核验MAT内容、拟合normalizer、运行真实DataLoader、重训或对原测试集进行新推理。重新绘图不等于重新测试。
+
+本次实际执行通过的只读发布核验入口（仅Python标准库，无MAT读取、无模型推理、无文件写入）：
+
+```powershell
+python -B reports/wifi_csi_baseline_report_final/verify_release.py
+```
+
+它检查当前保留的报告、图表、来源记录与冻结实验文件，不要求已删除的旧报告仍存在。旧 `verify_layout.py`、`COMPILE.md` 及旧 provenance 保留为历史记录，**不作为清理后的当前运行入口**；以更新后的 `RELEASE.md` 和 `COMPILE.md` 为准。
+
+## 7. 项目结构、Git与证据 / Structure and evidence
 
 ```text
 wifi-csi-har/
-├── README.md
-├── .gitignore
-├── data/
-│   ├── raw/
-│   └── processed/
-├── figures/
-├── models/
-├── notebooks/
-├── notes/
-├── results/
-├── scripts/
-├── src/
-├── configs/
+├── README.md, environment.yml, .gitattributes, .gitignore
+├── data/raw/ESP-Fi_dataset/       # 不提交原始数据
+├── data/processed/               # 当前空目录
+├── src/                          # Dataset和唯一CNN
+├── scripts/                      # 九个实验/检查脚本
+├── tests/                        # 合成数据离线回归测试
+├── configs/                      # Smoke与正式配置
+├── models/                       # 固定normalizer；只放行最佳Epoch16权重
+├── results/                      # Manifest、Split、Smoke、正式冻结结果
+├── figures/formal_seed42/         # 正式图表和来源记录
+├── notes/                        # CSI与深度学习笔记
+├── notebooks/                    # 当前空目录
 └── reports/
+    ├── wifi_csi_baseline_report_final.pdf
+    └── wifi_csi_baseline_report_final/  # 源码、排版副本和provenance
 ```
 
-| 目录 / Directory | 用途 / Purpose |
-| --- | --- |
-| `data/raw/` | 原始数据，原则上不直接修改，不提交 Git / Original data; generally kept unchanged and excluded from Git |
-| `data/processed/` | 预处理数据 / Processed data |
-| `figures/` | 实验图表 / Experimental figures |
-| `models/` | 模型与检查点 / Models and checkpoints |
-| `notebooks/` | Jupyter 学习与探索记录 / Jupyter learning and exploration notebooks |
-| `notes/` | CSI 与深度学习笔记 / CSI and deep learning notes |
-| `results/` | 正式 CSV 结果、数据清单与评估指标 / Formal CSV results, data manifests, and evaluation metrics |
-| `scripts/` | 可执行实验脚本 / Executable experiment scripts |
-| `src/` | 可复用 Python 模块 / Reusable Python modules |
-| `configs/` | 固定实验配置 / Fixed experimental configurations |
-| `reports/` | 最终 PDF 和报告材料 / Final PDFs and report materials |
+仓库地址：[wzhikun-helper/wifi-csi-har](https://github.com/wzhikun-helper/wifi-csi-har)。本次没有commit/push，不能把本机新增文件视为已发布到GitHub。
 
-空目录在普通 Git 提交中不会被保留；后续从 GitHub 获取项目时，按需补齐缺失目录。当前不添加占位文件。
+`.gitattributes` 对冻结证据禁用文本换行转换，保留现有字节；只为已有README和.gitignore保留原先LF Blob/CRLF工作副本映射。不运行批量归一化或 `git add --renormalize`。`.gitignore` 保留原始数据及其他权重保护，仅允许 `models/formal_seed42/epoch_016.pt`；报告build/qa中间产物不提交，正式PDF、源码、图表和来源记录保留。
 
-Empty directories are not preserved by ordinary Git commits. Recreate missing directories as needed after obtaining the project from GitHub. No placeholder files are currently added.
+按用户要求仅保留最终版本报告；旧版PDF和源码目录删除前，必要JSON/Markdown来源记录逐字节复制到最终目录的 `provenance/history/`。这些记录中的旧路径和旧哈希描述历史状态，不代表旧报告仍应存在。最终PDF、TeX、固定数据片段、正式图表和冻结结果未变。
 
-## 9. 环境说明 / Environment
+## 8. 限制 / Limitations
 
-以下是当前电脑的审计结果，**不代表正式实验已经完成，也不是已锁定的跨电脑依赖清单**。
+只有一个seed、一次固定人员划分和两名测试人员，不能推断所有未见人员上的效果。四个环境均进入各集合，本实验是**跨人员**而非留一环境评价；未验证跨环境泛化、硬件迁移或真实部署可靠性。
 
-The following describes the audited local environment. **It is neither evidence of completed experiments nor a locked dependency specification for other machines.**
-
-| 项目 / Item | 已核实结果 / Audited result |
-| --- | --- |
-| Conda 环境 / Environment | `wifi-csi` |
-| Python | 3.11.16, 64-bit |
-| PyTorch | 2.14.0+cu126 |
-| PyTorch CUDA 构建 / CUDA build | 12.6 |
-| `torch.cuda.is_available()` | `True` |
-| GPU | NVIDIA GeForce RTX 3060 Laptop GPU |
-| Jupyter Kernel | `wifi-csi` / Python (wifi-csi) |
-| Notebook / JupyterLab | 7.6.2 / 4.6.3 |
-
-本机 `conda.exe` 启动曾报“无效的系统 DLL 重定位”；通过 base Python 的 `-m conda` 查询成功。当前 PATH 未发现独立的 `jupyter` 命令，但使用 `wifi-csi` 的解释器调用 `python -m jupyter` 已通过检查。该异常尚未修复。
-
-The local `conda.exe` launcher reported an invalid system DLL relocation error, while invoking `-m conda` through base Python succeeded. A standalone `jupyter` command was not found on the current PATH, but `python -m jupyter` succeeded using the `wifi-csi` interpreter. The launcher issue remains unresolved.
-
-使用 Notebook 时选择 **Python (wifi-csi)**，并核对 `sys.executable` 指向该环境。不得将 base 或未明确指向环境的 `python3` Kernel 当成 `wifi-csi`。跨电脑安装说明和可复现依赖清单待后续验证后提供，本阶段不安装或升级依赖。
-
-Select **Python (wifi-csi)** in notebooks and verify that `sys.executable` points to that environment. Do not substitute base or an ambiguous `python3` kernel. Installation instructions for other machines and a reproducible dependency specification will be provided after validation. No dependencies are installed or upgraded at this stage.
-
-## 10. 运行步骤 / Workflow
-
-以下为后续执行顺序，**尚无可直接运行的端到端训练命令**；脚本名称和参数将在实现并验证后补充。
-
-This is the planned execution order. **No runnable end-to-end training command exists yet.** Script names and arguments will be documented after implementation and verification.
-
-1. 核对解释器和 Notebook Kernel，处理影响使用的环境问题。 / Verify the interpreter and notebook kernel, and address environment issues that affect use.
-2. 核实数据来源、许可、标签、维度与完整性，将原始数据放入 `data/raw/`。 / Verify the data source, license, labels, dimensions, and integrity, then place source data in `data/raw/`.
-3. 按 P1–P5 / P6 / P7–P8 固定划分并审计泄漏。 / Apply the fixed participant split and audit for leakage.
-4. 实现幅度预处理，仅用训练集拟合统计量。 / Implement amplitude preprocessing with statistics fitted only on training data.
-5. 实现并训练轻量级 1D CNN，使用 P6 选择配置和检查点。 / Implement and train the lightweight 1D CNN, selecting configurations and checkpoints using P6.
-6. 配置固定后，在 P7–P8 上进行最终评估，保存正式 CSV 和图表。 / Freeze the configuration, evaluate on P7–P8, and save formal CSV results and figures.
-7. 整理复现说明和报告，生成并验证最终 PDF。 / Complete reproduction documentation and reports, then generate and verify the final PDF.
-
-## 11. 当前进度 / Current progress
-
-| 工作 / Work item | 状态 / Status |
-| --- | --- |
-| 项目目录创建与检查 / Directory creation and inspection | 已完成 / Complete |
-| 本机开发环境审计 / Local environment audit | 已完成；Conda 启动入口异常待处理 / Complete; Conda launcher issue remains |
-| README 与忽略规则 / README and ignore rules | 已建立 / Created |
-| 数据来源、许可与实际数据审计 / Source, license, and actual data audit | 待完成 / Pending |
-| 数据划分与预处理 / Splitting and preprocessing | 待完成 / Pending |
-| 模型实现与正式训练 / Model implementation and formal training | 待完成 / Pending |
-| 正式指标、CSV 与实验图表 / Formal metrics, CSV files, and figures | 待完成 / Pending |
-| 报告与最终 PDF / Report and final PDF | 待完成 / Pending |
-| Git 初始化、远程仓库与发布 / Git initialization, remote repository, and publication | 待完成；本阶段不执行 / Pending; outside this stage |
-| 跨电脑复现验证 / Reproduction on another machine | 待完成 / Pending |
-
-## 12. 限制与注意事项 / Limitations and cautions
-
-数据规模和形状仍待核验。固定人员划分的可执行性需确认原始人员标签；不同人员的环境分布也可能影响解释。单次固定划分不能代表所有未见人员或真实部署条件，后续结论必须限定在实际评估范围内。
-
-Dataset size and shape remain unverified. Applying the fixed split depends on source participant labels, and environment distribution across participants may affect interpretation. One fixed split cannot represent every unseen person or deployment condition; future claims must stay within the evaluated scope.
-
-当前未锁定依赖、未固定训练随机种子，也未验证跨电脑复现。`.gitignore` 不会自动取消已有文件的 Git 跟踪；提交前仍需检查数据、权重、密钥和隐私信息。正式结果 CSV、图表、论文源文件和最终 PDF 不应被整体忽略。
-
-Dependencies and training seeds are not yet fixed, and reproduction on another machine is untested. `.gitignore` does not untrack files already in Git; future submissions must be checked for data, weights, secrets, and private information. Formal CSV results, figures, paper source files, and final PDFs must not be excluded wholesale.
-
-## 13. GitHub 后续复现说明 / Future GitHub reproduction
-
-当前未初始化或发布本项目的 Git 仓库，因此没有可核实的仓库链接。后续发布前，应补齐经验证的数据获取与引用说明、依赖版本、类别映射、固定划分、预处理参数、随机种子、训练和评估命令、硬件信息以及正式结果，并在干净环境中验证完整流程。
-
-This project has not been initialized or published as a Git repository, so no verified repository URL is available. Before publication, provide validated data access and citation instructions, dependency versions, class mappings, the fixed split, preprocessing parameters, random seeds, training and evaluation commands, hardware details, and formal results. Verify the full workflow in a clean environment.
-
-获得公开仓库后，复现者应按已验证说明获取数据、补齐空目录、配置环境并运行固定协议。原始数据和大型权重的分发方式须符合许可，并在后续单独说明；本 README 暂不承诺尚未实现的复现命令。
-
-Once a public repository exists, users should follow its validated instructions to obtain data, recreate empty directories, configure an environment, and run the fixed protocol. Distribution of raw data and large weights must comply with the applicable license and will be documented separately. This README does not promise commands that have not been implemented.
+未完成跨电脑安装和端到端复现；新入口保留防覆盖规则，并将运行路径和设备与冻结实验配置分开记录；不再限制GPU型号。原始数据许可及再分发条件应由使用者查阅作者说明；本仓库不重新分发数据。当前低测试分数如实保留，不作为重新选择模型的依据。

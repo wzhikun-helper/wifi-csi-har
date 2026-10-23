@@ -1,0 +1,84 @@
+{
+  "status": "PASS",
+  "original_files_byte_unchanged": 66,
+  "frozen_provenance_inputs_byte_unchanged": 16,
+  "original_pdf_sha256": "1a93af891cb879ae1b65be080c12f645517fd14a4a34ae9c49cff7b314260c42",
+  "new_pdf_sha256": "2db3324deed05023ec073e1daf85ec61fe6ab11ff70b4a09e24c79c5dc26c201",
+  "new_pdf_bytes": 437575,
+  "pages": [
+    {
+      "page": 1,
+      "characters": 937,
+      "outside_page_safety_area": 0
+    },
+    {
+      "page": 2,
+      "characters": 992,
+      "outside_page_safety_area": 0
+    },
+    {
+      "page": 3,
+      "characters": 1202,
+      "outside_page_safety_area": 0
+    },
+    {
+      "page": 4,
+      "characters": 788,
+      "outside_page_safety_area": 0
+    },
+    {
+      "page": 5,
+      "characters": 778,
+      "outside_page_safety_area": 0
+    },
+    {
+      "page": 6,
+      "characters": 735,
+      "outside_page_safety_area": 0
+    },
+    {
+      "page": 7,
+      "characters": 1381,
+      "outside_page_safety_area": 0
+    }
+  ],
+  "fonts_embedded": {
+    "/KLAMTH+TimesNewRomanPSMT": true,
+    "/NRMDVL+SimSun": true,
+    "/ILTQIN+Arial-BoldMT": true,
+    "/LRWNPG+SimHei": true,
+    "/TWBUPE+Consolas": true,
+    "/SQJJLO+TimesNewRomanPS-BoldMT": true,
+    "/SJFTYI+CMR12": true,
+    "/FLGCVX+CMSY10": true,
+    "/SKKFKY+CMMI12": true,
+    "/GCEQQM+CMMI8": true,
+    "/FJNSSP+CMEX10": true,
+    "/LMENOL+CMSY8": true,
+    "/JKVZCB+CMR8": true,
+    "/PPQSJT+CMR10": true,
+    "/JRNFMR+CMMI10": true,
+    "/UIKFIC+CMR9": true,
+    "/GFDMRE+CMSY9": true
+  },
+  "pdf_reference_uri_targets": [
+    "https://arxiv.org/abs/2601.12980v2",
+    "https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/wifi-driver/wifi-vendor-features.html",
+    "https://docs.pytorch.org/docs/2.14/generated/torch.nn.CrossEntropyLoss.html",
+    "https://docs.pytorch.org/tutorials/beginner/basics/data_tutorial.html",
+    "https://github.com/AutoSmartGroup/ESP-Fi-HAR"
+  ],
+  "epochs": 26,
+  "best_epoch": 16,
+  "val_accuracy_percent": 27.1429,
+  "test_accuracy_percent": 26.42857142857143,
+  "test_macro_f1": 0.257180753398113,
+  "confusion_matrix_total": 560,
+  "parameters": 35655,
+  "report_data_byte_identical": true,
+  "overfull_boxes": 0,
+  "missing_glyphs": 0,
+  "undefined_references": 0,
+  "hard_pagebreak_commands": 0,
+  "visual_qa": "人工逐页检查记录见 LAYOUT_CHANGES.md；自动检查不替代视觉检查"
+}

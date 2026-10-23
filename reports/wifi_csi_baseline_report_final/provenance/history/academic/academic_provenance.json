@@ -1,0 +1,28 @@
+{
+  "original_pdf": "reports/wifi_csi_baseline_report.pdf",
+  "new_pdf": "reports/wifi_csi_baseline_report_academic.pdf",
+  "new_pdf_sha256": "2db3324deed05023ec073e1daf85ec61fe6ab11ff70b4a09e24c79c5dc26c201",
+  "source_sha256": {
+    "architecture.tex": "ad0f7e85a6d5d9d487caf59d102e2bbb1cb3d46b2770aeee3e4e38d8460d33bf",
+    "architecture_contract.md": "25b8426b959c5f91481c58e63bfe8b6ea2f510eb520b548c2a7b5f1bd6985c9e",
+    "architecture_preview.tex": "5e6424ab2df9f1de8f612bcd96c667b8340224224efceff7eb8e1719dd6f5bc3",
+    "before_sha256.json": "2656e9f2c5ab59e4977d13607683d6f03b5120068802c118b52ea2546a4471d1",
+    "COMPILE.md": "8f8c0fb643ccf943b51a7e5459b249c2baffbb9e3e8e83927fcaea4d8a9bb7b9",
+    "LAYOUT_CHANGES.md": "5635c7873c35d96f5cd94d51c4c00044a221d65a82dee4ec2b0029afc6d0ed30",
+    "layout_validation.json": "6b00510030481c1101ef6fa46c18288a757e763a76c07899a6b9dcd9c37b5fbf",
+    "main.tex": "dace7030c7dfcee385fd551f97a27661c958f709d3c44c0e6e96cb62934b32ca",
+    "report_data.tex": "67be45a8a663fa8416393a0d23eeb0d46aaf561d5e74db3fd904a4b86eb44e32",
+    "verify_layout.py": "97463b45fe7ddf9b805ad2ce932e15a157c27475b3794025fe5516f58b2a11ce"
+  },
+  "final_rendered_pages": [
+    "qa/delivery-1.png",
+    "qa/delivery-2.png",
+    "qa/delivery-3.png",
+    "qa/delivery-4.png",
+    "qa/delivery-5.png",
+    "qa/delivery-6.png",
+    "qa/delivery-7.png"
+  ],
+  "all_final_pages_visually_reviewed": true,
+  "training_or_model_inference_executed": false
+}

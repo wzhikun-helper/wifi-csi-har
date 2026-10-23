@@ -1,0 +1,22 @@
+{
+  "loss_curve": {
+    "source_sha256": "d45bd6533c81657e595d42514da849dd10eccefec11d169c844a5c8db0766401",
+    "layout_sha256": "e207ef833c19fdbb3383e3773cedae341ff7f90b04c6822820fcf39087484c76",
+    "removed_text_only": [
+      "Training improves while validation loss rises",
+      "Train n=1400; validation n=280 | Seed 42; one run; no confidence intervals.",
+      "All 26 recorded epochs; raw epoch points, without smoothing or resampling."
+    ],
+    "all_non_text_drawing_operations_unchanged": true
+  },
+  "accuracy_curve": {
+    "source_sha256": "c18392cb619b779422e1aabb27ac3491f5f549d1e4979743cc5b22990d2b5330",
+    "layout_sha256": "ec07c4784bb37183abb450e8bed7887d20c1af6b52fa4ca22f319ef7d88585bc",
+    "removed_text_only": [
+      "The training-validation accuracy gap widens",
+      "Train n=1400; validation n=280 | Seed 42; one run; no confidence intervals.",
+      "All 26 recorded epochs; raw epoch points, without smoothing or resampling."
+    ],
+    "all_non_text_drawing_operations_unchanged": true
+  }
+}

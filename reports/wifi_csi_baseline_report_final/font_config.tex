@@ -1,0 +1,29 @@
+% Optional Windows file-path workaround; other systems use named/TeX fonts.
+\IfFileExists{C:/Windows/Fonts/times.ttf}{%
+  \setmainfont[Path=C:/Windows/Fonts/,BoldFont=timesbd.ttf,ItalicFont=timesi.ttf,BoldItalicFont=timesbi.ttf]{times.ttf}
+  \setsansfont[Path=C:/Windows/Fonts/,BoldFont=arialbd.ttf]{arial.ttf}
+  \setmonofont[Path=C:/Windows/Fonts/]{consola.ttf}
+}{%
+  \setmainfont{TeX Gyre Termes}
+  \setsansfont{TeX Gyre Heros}
+  \setmonofont{Latin Modern Mono}
+}
+\IfFileExists{C:/Windows/Fonts/simsun.ttc}{%
+  \setCJKmainfont[Path=C:/Windows/Fonts/,FontIndex=0,BoldFont=simhei.ttf,AutoFakeSlant=0.2]{simsun.ttc}
+  \setCJKsansfont[Path=C:/Windows/Fonts/,BoldFont=simhei.ttf]{simhei.ttf}
+  \setCJKmonofont[Path=C:/Windows/Fonts/,FontIndex=0]{simsun.ttc}
+}{%
+  \IfFontExistsTF{Noto Serif CJK SC}{%
+    \setCJKmainfont{Noto Serif CJK SC}
+    \IfFontExistsTF{Noto Sans CJK SC}{%
+      \setCJKsansfont{Noto Sans CJK SC}
+    }{%
+      \setCJKsansfont{FandolHei-Regular}[BoldFont=FandolHei-Bold]
+    }
+    \setCJKmonofont{Noto Serif CJK SC}
+  }{%
+    \setCJKmainfont{FandolSong-Regular}[BoldFont=FandolSong-Bold]
+    \setCJKsansfont{FandolHei-Regular}[BoldFont=FandolHei-Bold]
+    \setCJKmonofont{FandolFang-Regular}
+  }
+}

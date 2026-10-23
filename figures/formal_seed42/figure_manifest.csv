@@ -1,0 +1,5 @@
+figure_id,core_claim,source_csv,outputs,script
+loss_curve,Train loss declines while validation loss rises,results/formal_seed42/metrics.csv,figures/formal_seed42/loss_curve.png;figures/formal_seed42/loss_curve.pdf;figures/formal_seed42/loss_curve.svg,scripts/make_figures.py
+accuracy_curve,A training-validation accuracy gap develops,results/formal_seed42/metrics.csv,figures/formal_seed42/accuracy_curve.png;figures/formal_seed42/accuracy_curve.pdf;figures/formal_seed42/accuracy_curve.svg,scripts/make_figures.py
+confusion_matrix,Cross-person errors differ by activity,results/formal_seed42/test/confusion_matrix.csv;results/formal_seed42/test/predictions.csv,figures/formal_seed42/confusion_matrix.png;figures/formal_seed42/confusion_matrix.pdf;figures/formal_seed42/confusion_matrix.svg,scripts/make_figures.py
+per_class_metrics,Falling leads F1; walking has low recall despite high precision,results/formal_seed42/test/classification_report.csv;results/formal_seed42/test/predictions.csv,figures/formal_seed42/per_class_metrics.png;figures/formal_seed42/per_class_metrics.pdf;figures/formal_seed42/per_class_metrics.svg,scripts/make_figures.py

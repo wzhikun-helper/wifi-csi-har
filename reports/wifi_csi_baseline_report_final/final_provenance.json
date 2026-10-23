@@ -1,0 +1,23 @@
+{
+  "final_pdf": "reports/wifi_csi_baseline_report_final.pdf",
+  "final_pdf_sha256": "b61846d000772ddf4a8dc1c3318ab3c01b99bc4e06b4f6dd6d88db87ef5e7839",
+  "pages": 6,
+  "previous_pdf": "reports/wifi_csi_baseline_report_academic.pdf",
+  "previous_pdf_sha256": "2db3324deed05023ec073e1daf85ec61fe6ab11ff70b4a09e24c79c5dc26c201",
+  "source_sha256": {
+    "architecture.tex": "ad0f7e85a6d5d9d487caf59d102e2bbb1cb3d46b2770aeee3e4e38d8460d33bf",
+    "before_sha256.json": "7652cc8cd16722c660986bbea04e70878f81033fa052d937b47deb33d3b0496b",
+    "COMPILE.md": "77e77919a05b83de8235232deee5202774f8a9c43798c36ecff090ff0f16ea4e",
+    "curve_layout_provenance.json": "889bc94fe1e0d5b528b30fb9290c686a308b3bc08784bf4c5a8f1163642d0278",
+    "layout_validation.json": "480efd5d77afc1588814058275361192911bdf9d11233fc196b31e63cba03263",
+    "main.tex": "36e95de927fd7b2000f22d688d9f4b0621f50b3d09cec2a9a98ac59008a9b3e1",
+    "prepare_curve_layout.py": "37099fd5f3119b302bf96525152f0bfd31d7e25816c5f9ca647e90212bfbe194",
+    "report_data.tex": "67be45a8a663fa8416393a0d23eeb0d46aaf561d5e74db3fd904a4b86eb44e32",
+    "REVISION_LOG.md": "5c7e0f3f004c15983adeb2a402f98afdf9bb65fcbb3ba38b273d52f7de17aebf",
+    "verify_layout.py": "abee2d236e748947a173b02b96bba9f7a73324953206abb8bd09c1de2c887cb9",
+    "assets/accuracy_curve.pdf": "ec07c4784bb37183abb450e8bed7887d20c1af6b52fa4ca22f319ef7d88585bc",
+    "assets/loss_curve.pdf": "e207ef833c19fdbb3383e3773cedae341ff7f90b04c6822820fcf39087484c76"
+  },
+  "all_six_final_rendered_pages_visually_checked": true,
+  "training_or_evaluation_executed": false
+}

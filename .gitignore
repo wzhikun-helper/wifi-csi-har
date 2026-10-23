@@ -56,6 +56,20 @@ env/
 *.h5
 *.hdf5
 
+# Archive only the frozen best baseline; other checkpoints remain ignored.
+!/models/formal_seed42/epoch_016.pt
+
+# Report compiler intermediates and development renders, not deliverable PDFs.
+/reports/**/build/
+/reports/**/qa/
+*.xdv
+*.dvi
+*.synctex
+*.idx
+*.ilg
+*.ind
+*.thm
+
 # IDE and OS metadata
 .vscode/
 .idea/

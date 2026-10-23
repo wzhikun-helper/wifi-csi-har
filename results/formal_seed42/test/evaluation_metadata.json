@@ -1,0 +1,128 @@
+{
+  "status": "completed",
+  "started_at_utc": "2026-10-22T05:59:39.784333+00:00",
+  "checkpoint": "models/formal_seed42/epoch_016.pt",
+  "checkpoint_sha256": "b36c1d41432abd9a7276f00554ac4a06568a66c27d52318331d01a448452f479",
+  "checkpoint_epoch": 16,
+  "normalizer_path": "models/csi_normalizer.npz",
+  "normalizer_sha256": "06d6aba2c0f305644829a41b14f7fd978258cb95b2cb83d81aab23cfc46d4b4f",
+  "normalizer_source": {
+    "split": "train",
+    "participants": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "samples": 1400
+  },
+  "config": {
+    "run_type": "formal",
+    "seed": 42,
+    "device": "cuda",
+    "max_epochs": 40,
+    "early_stopping_patience": 10,
+    "batch_size": 32,
+    "num_workers": 0,
+    "model": "LightweightCNN",
+    "optimizer": "Adam",
+    "learning_rate": 0.001,
+    "weight_decay": 0.0,
+    "loss": "CrossEntropyLoss",
+    "split_csv": "results/dataset_split.csv",
+    "data_root": "data/raw/ESP-Fi_dataset",
+    "normalizer_path": "models/csi_normalizer.npz",
+    "results_dir": "results/formal_seed42",
+    "checkpoints_dir": "models/formal_seed42",
+    "checkpoint_selection": "val_accuracy_then_lower_val_loss"
+  },
+  "protected_file_sha256": {
+    "results/dataset_manifest.csv": "b7b0c2475ff125df157ff7bc9443a18a0e6ce709e28f3dc1a099b5af6beae6a7",
+    "results/dataset_split.csv": "dd13135ed003ad62e3978c2d7d1964e6599aa1e3d2d7b4ba92eeb9179e624a51",
+    "models/csi_normalizer.npz": "06d6aba2c0f305644829a41b14f7fd978258cb95b2cb83d81aab23cfc46d4b4f",
+    "src/model.py": "8132a2afa5cb0747cb2998b344e4cac2ee15f1fe4caa165699b0fd3a3a2a0f81",
+    "src/dataset.py": "41c50a78d1a021dddfa1d7851a05f5d4112e8e62cae458b2b068a87b6c6ad515",
+    "models/formal_seed42/epoch_016.pt": "b36c1d41432abd9a7276f00554ac4a06568a66c27d52318331d01a448452f479",
+    "configs/formal_seed42.yaml": "d17bef97b3ccc908230356767e04e4a19f0f7bcc546fa3f0a184647a64e1f16b",
+    "results/formal_seed42/config_snapshot.yaml": "d17bef97b3ccc908230356767e04e4a19f0f7bcc546fa3f0a184647a64e1f16b",
+    "results/formal_seed42/summary.json": "1b500db5ffbe7a5d725f784299f6fc63b6f46b55e74201945f7eee47ea51692d",
+    "results/formal_seed42/status.json": "74eaa32147d04bd815dd7affbbef89231551a70ad266133218dec20335dc5767",
+    "results/formal_seed42/metrics.csv": "c7d46a63a1880d683d0d94e92bf70e1b19ed8a319a3fe487b1a02827d0f292de",
+    "scripts/run_experiment.py": "bd7976bd827f7b121afbffdb93841829aacfcdcd6bdfffde44a4e2f204f8608c"
+  },
+  "evaluation_script_sha256": "49e051fc2e940d771135301327fdea7d95f484b1c4d68787d6cf0f98f1056b69",
+  "test_participants": [
+    7,
+    8
+  ],
+  "expected_samples": 560,
+  "batch_size": 32,
+  "shuffle": false,
+  "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+  "pytorch": "2.14.0+cu126",
+  "cuda_build": "12.6",
+  "scipy": "1.17.1",
+  "scikit_learn": "1.9.0",
+  "class_mapping": {
+    "0": {
+      "activity_id": 1,
+      "activity_name": "running"
+    },
+    "1": {
+      "activity_id": 2,
+      "activity_name": "falling"
+    },
+    "2": {
+      "activity_id": 3,
+      "activity_name": "walking"
+    },
+    "3": {
+      "activity_id": 4,
+      "activity_name": "turning"
+    },
+    "4": {
+      "activity_id": 5,
+      "activity_name": "jumping"
+    },
+    "5": {
+      "activity_id": 6,
+      "activity_name": "squatting"
+    },
+    "6": {
+      "activity_id": 7,
+      "activity_name": "waving"
+    }
+  },
+  "prediction_score": "softmax probability; all seven scores saved; argmax ties choose first label",
+  "zero_division": 0,
+  "macro_f1_labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "model_selection_uses_test": false,
+  "test_inference_passes": 1,
+  "finished_at_utc": "2026-10-22T05:59:41.391148+00:00",
+  "independent_csv_recalculation": {
+    "samples": 560,
+    "unique_samples": 560,
+    "accuracy": 0.2642857142857143,
+    "macro_f1": 0.257180753398113,
+    "confusion_matrix_sum": 560,
+    "passed": true
+  },
+  "model_parameters_unchanged": true,
+  "protected_files_unchanged": true,
+  "sample_ids_sha256": "75fc27ce88bdf538ab81628d760f92ecaab127c78e471740bd2bc1e78fe53f5a",
+  "output_sha256": {
+    "test_metrics.json": "5d7c44374417ab59e94e01671d93b9c12b4ca4dad61761ec5da8637717a8f121",
+    "predictions.csv": "89996a54ea29f425c7af4e3944c5eb307848642c3b8d2572672fd37cfab66c32",
+    "confusion_matrix.csv": "9c0ba8d070d1dc3434edd23ca783430f5009aab32804f69246ab295cd693932c",
+    "classification_report.csv": "29f24ae61fe99c98af74b58881d0c5da6b0692711417d8219a5211422423cc6a"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "source_sha256": {
+    "results/formal_seed42/metrics.csv": "c7d46a63a1880d683d0d94e92bf70e1b19ed8a319a3fe487b1a02827d0f292de",
+    "results/formal_seed42/config_snapshot.yaml": "d17bef97b3ccc908230356767e04e4a19f0f7bcc546fa3f0a184647a64e1f16b",
+    "results/formal_seed42/summary.json": "1b500db5ffbe7a5d725f784299f6fc63b6f46b55e74201945f7eee47ea51692d",
+    "results/formal_seed42/analysis.md": "9e69ad756bb88859f5535b3786215ca1521ea6ca0ad5e4d7c1b76af6c1a35530",
+    "results/formal_seed42/test/predictions.csv": "89996a54ea29f425c7af4e3944c5eb307848642c3b8d2572672fd37cfab66c32",
+    "results/formal_seed42/test/confusion_matrix.csv": "9c0ba8d070d1dc3434edd23ca783430f5009aab32804f69246ab295cd693932c",
+    "results/formal_seed42/test/classification_report.csv": "29f24ae61fe99c98af74b58881d0c5da6b0692711417d8219a5211422423cc6a",
+    "results/formal_seed42/test/test_metrics.json": "5d7c44374417ab59e94e01671d93b9c12b4ca4dad61761ec5da8637717a8f121",
+    "results/formal_seed42/test/evaluation_metadata.json": "0d22850003a58414feedc7f42aa685dca8d26239518f4f26646014d29df5ee0e",
+    "models/formal_seed42/epoch_016.pt": "b36c1d41432abd9a7276f00554ac4a06568a66c27d52318331d01a448452f479",
+    "models/csi_normalizer.npz": "06d6aba2c0f305644829a41b14f7fd978258cb95b2cb83d81aab23cfc46d4b4f",
+    "results/dataset_split.csv": "dd13135ed003ad62e3978c2d7d1964e6599aa1e3d2d7b4ba92eeb9179e624a51",
+    "figures/formal_seed42/loss_curve.pdf": "d45bd6533c81657e595d42514da849dd10eccefec11d169c844a5c8db0766401",
+    "figures/formal_seed42/accuracy_curve.pdf": "c18392cb619b779422e1aabb27ac3491f5f549d1e4979743cc5b22990d2b5330",
+    "figures/formal_seed42/confusion_matrix.pdf": "488d7161d536ce2dd17f6c9b6e4fc2be92e359eee8c40d26186f463022219b42",
+    "figures/formal_seed42/per_class_metrics.pdf": "3055e88a3f01ac24d2c9d6e460c4dfb40b63f742e265d393b3ea1d83aca9e314"
+  },
+  "parameters_verified": {
+    "conv1": 10048,
+    "conv2": 24704,
+    "classifier": 903,
+    "total": 35655
+  },
+  "checks": {
+    "epochs": 26,
+    "best_epoch": 16,
+    "test_samples": 560,
+    "correct_predictions": 148,
+    "test_accuracy": 0.2642857142857143,
+    "test_macro_f1": 0.257180753398113
+  },
+  "literature": {
+    "verified_version": "arXiv:2601.12980v2",
+    "scope_read": "bibliographic record, abstract and introduction",
+    "publisher_metadata": "not independently verified; not used as confirmed citation"
+  },
+  "command": "python -B build_report.py; xelatex -disable-installer -halt-on-error -interaction=nonstopmode -output-directory=build main.tex (twice)",
+  "pdf": {
+    "path": "reports/wifi_csi_baseline_report.pdf",
+    "pages": 7,
+    "sha256": "1a93af891cb879ae1b65be080c12f645517fd14a4a34ae9c49cff7b314260c42",
+    "bytes": 416121
+  },
+  "source_files_sha256": {
+    "main.tex": "4434d8fb51c49b01488c8d57bee11571bf4b69331cb7e4db88c65f9e34c8bf9c",
+    "report_data.tex": "67be45a8a663fa8416393a0d23eeb0d46aaf561d5e74db3fd904a4b86eb44e32",
+    "build_report.py": "33eaab99226799d4e50d1c2d5d41fcaa52ba605066a7191444f440420d3fe071",
+    "COMPILE.md": "f9f97fd14b80ea9c64498fee62cee85f78a5b49a75babb11fa27d917f483450e"
+  },
+  "qa": {
+    "status": "passed",
+    "all_seven_rendered_pages_visually_reviewed": true,
+    "overfull_boxes": 0,
+    "missing_glyphs": 0,
+    "undefined_references": 0,
+    "frozen_project_files_unchanged": 55,
+    "font_workaround": "explicit existing Windows font files; system Fontconfig not modified",
+    "benign_warnings": "legacy Fontconfig path warning persists in compiler stderr; direct font loading succeeds and embedded fonts checked; math font size substitution <=0.411pt; URL underfull spacing only"
+  }
+}
