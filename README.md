@@ -4,6 +4,20 @@
 
 A lightweight PyTorch 1D CNN baseline for seven-class, cross-person Wi-Fi CSI activity recognition. The dataset audit, formal training, one frozen test evaluation, figures, notes and final report are complete. Cross-machine reproduction has not been validated.
 
+## 课程作业交付导航
+
+| 交付内容 | 入口 |
+|---|---|
+| 1D CNN正式实验报告 | [6页PDF](reports/wifi_csi_baseline_report_final.pdf) · [LaTeX源码](reports/wifi_csi_baseline_report_final/main.tex) |
+| CSI与Conv1d学习笔记 | [Wi-Fi CSI基础](notes/wifi_csi_notes.md) · [一维时序深度学习](notes/deep_learning_1d_timeseries_notes.md) |
+| 数据来源与跨人员协议 | [数据来源说明](#1-数据来源与实际结构--dataset) · [固定划分CSV](results/dataset_split.csv) · [复现协议](reports/wifi_csi_baseline_report_final/PIPELINE_REPRODUCTION.md) |
+| 训练与评价入口 | [训练入口](scripts/run_experiment.py) · [评价入口](scripts/evaluate.py) · [正式配置](configs/formal_seed42.yaml) |
+| 冻结测试指标与局限 | [已保存指标](results/formal_seed42/test/test_metrics.json) · [实验分析](results/formal_seed42/analysis.md) · [限制说明](#8-限制--limitations) |
+| 验收与学习材料索引 | [文档索引](docs/README.md) · [当前发布核验](reports/wifi_csi_baseline_report_final/RELEASE.md) · [本次归档记录](docs/COURSE_DELIVERY_CLEANUP.md) |
+
+正式测试仅使用P7–P8的560个样本；本次归档不重新训练或计算测试性能。
+私有MAT/CSV不公开，当前发布索引与47项历史冻结清单分开维护，不能把索引更新视为实验结果更新。
+
 ## 1. 数据来源与实际结构 / Dataset
 
 作者仓库：[AutoSmartGroup/ESP-Fi-HAR](https://github.com/AutoSmartGroup/ESP-Fi-HAR)。请通过作者提供的获取方式取得数据，并核对其引用与许可要求；本仓库不分发原始数据，也不提供猜测的直链。
@@ -164,7 +178,7 @@ wifi-csi-har/
     └── wifi_csi_baseline_report_final/  # 源码、排版副本和provenance
 ```
 
-仓库地址：[wzhikun-helper/wifi-csi-har](https://github.com/wzhikun-helper/wifi-csi-har)。本次没有commit/push，不能把本机新增文件视为已发布到GitHub。
+仓库地址：[wzhikun-helper/wifi-csi-har](https://github.com/wzhikun-helper/wifi-csi-har)。原发布准备阶段未提交的说明属于历史记录；本次课程交付整理的验证范围见 [归档记录](docs/COURSE_DELIVERY_CLEANUP.md)，远程状态以实际Git提交为准。
 
 `.gitattributes` 对冻结证据禁用文本换行转换，保留现有字节；只为已有README和.gitignore保留原先LF Blob/CRLF工作副本映射。不运行批量归一化或 `git add --renormalize`。`.gitignore` 保留原始数据及其他权重保护，仅允许 `models/formal_seed42/epoch_016.pt`；报告build/qa中间产物不提交，正式PDF、源码、图表和来源记录保留。
 
