@@ -1,191 +1,121 @@
-# ESP32 Wi-Fi CSI Cross-Person HAR Baseline
+# Wi-Fi CSI Cross-Person Activity Recognition
 
-基于 ESP-Fi HAR 幅度序列的固定跨人员七分类基线。核心问题：**模型未见过某位参与者时，能否识别其动作？**
+**基于ESP-Fi HAR幅度序列的轻量1D CNN跨人员动作识别基线。**
 
-A lightweight PyTorch 1D CNN baseline for seven-class, cross-person Wi-Fi CSI activity recognition. The dataset audit, formal training, one frozen test evaluation, figures, notes and final report are complete. Cross-machine reproduction has not been validated.
+A fixed participant-disjoint baseline with training-only normalization, validation-selected checkpoints, and archived seven-class test results.
 
-## 课程作业交付导航
+[实验报告](reports/wifi_csi_baseline_report_final.pdf) · [快速开始](#快速开始) · [复现指南](docs/REPRODUCIBILITY.md) · [学习笔记](docs/README.md) · [数据来源](https://github.com/AutoSmartGroup/ESP-Fi-HAR)
 
-| 交付内容 | 入口 |
+## 项目概览
+
+核心问题是：**训练时未见过某位参与者，模型还能否识别其动作？**
+
+本项目在ESP-Fi HAR上建立固定跨人员七分类基线，从数据配对、人员划分、训练集标准化到checkpoint选择和一次正式测试，保留完整结果来源。使用简单可检查的1D CNN，而非追求复杂架构。
+
+| 项目 | 设置 |
 |---|---|
-| 1D CNN正式实验报告 | [6页PDF](reports/wifi_csi_baseline_report_final.pdf) · [LaTeX源码](reports/wifi_csi_baseline_report_final/main.tex) |
-| CSI与Conv1d学习笔记 | [Wi-Fi CSI基础](notes/wifi_csi_notes.md) · [一维时序深度学习](notes/deep_learning_1d_timeseries_notes.md) |
-| 数据来源与跨人员协议 | [数据来源说明](#1-数据来源与实际结构--dataset) · [固定划分CSV](results/dataset_split.csv) · [复现协议](reports/wifi_csi_baseline_report_final/PIPELINE_REPRODUCTION.md) |
-| 训练与评价入口 | [训练入口](scripts/run_experiment.py) · [评价入口](scripts/evaluate.py) · [正式配置](configs/formal_seed42.yaml) |
-| 冻结测试指标与局限 | [已保存指标](results/formal_seed42/test/test_metrics.json) · [实验分析](results/formal_seed42/analysis.md) · [限制说明](#8-限制--limitations) |
-| 验收与学习材料索引 | [文档索引](docs/README.md) · [当前发布核验](reports/wifi_csi_baseline_report_final/RELEASE.md) · [本次归档记录](docs/COURSE_DELIVERY_CLEANUP.md) |
+| 样本 | 2,240对MAT/CSV，每对对应一个样本 |
+| 数据覆盖 | 8名参与者、4个环境、7类动作 |
+| 输入 | 幅度序列(950, 52)，模型输入(B, 52, 950) |
+| 模型 | LightweightCNN，35,655个参数 |
+| 评价 | 固定跨人员划分；Accuracy与Macro-F1 |
 
-正式测试仅使用P7–P8的560个样本；本次归档不重新训练或计算测试性能。
-私有MAT/CSV不公开，当前发布索引与47项历史冻结清单分开维护，不能把索引更新视为实验结果更新。
-
-## 1. 数据来源与实际结构 / Dataset
-
-作者仓库：[AutoSmartGroup/ESP-Fi-HAR](https://github.com/AutoSmartGroup/ESP-Fi-HAR)。请通过作者提供的获取方式取得数据，并核对其引用与许可要求；本仓库不分发原始数据，也不提供猜测的直链。
-
-本地已核实 **2240 对 MAT/CSV**，不是4480个独立样本。四个环境各560对，8名参与者、7类动作、10次重复。解压后放置为：
-
-```text
-data/raw/ESP-Fi_dataset/
-├── EnvironmentNo.1(corridor)/
-├── EnvironmentNo.2（Office）/
-├── EnvironmentNo.3（boardrooms）/
-└── EnvironmentNo.4（laboratory）/
-```
-
-保留原有目录名（含全角括号和大小写）。文件名 `X-Y-Z-M.mat` / 同主干CSV分别表示环境、参与者、动作、重复编号。Manifest路径相对于 `data/raw/ESP-Fi_dataset/`，不含本机绝对路径。
-
-MAT变量 `CSIamp` 的形状为 `(950,52)`，即本项目使用的时间位置×幅度通道。不能由此推断采样率或持续秒数。本实验只读取幅度，不读取或处理相位。
-
-| activity_id | 动作 / Activity | PyTorch标签 |
-|---:|---|---:|
-| 1 | 跑步 / running | 0 |
-| 2 | 跌倒 / falling | 1 |
-| 3 | 行走 / walking | 2 |
-| 4 | 转身 / turning | 3 |
-| 5 | 跳跃 / jumping | 4 |
-| 6 | 下蹲 / squatting | 5 |
-| 7 | 挥手 / waving | 6 |
-
-## 2. 固定协议与方法 / Protocol and method
+## 实验协议
 
 | 集合 | 参与者 | 样本数 | 用途 |
 |---|---|---:|---|
-| train | P1–P5 | 1400 | 拟合标准化、更新权重 |
-| val | P6 | 280 | checkpoint选择与早停 |
-| test | P7–P8 | 560 | 模型冻结后的正式评价 |
+| Train | P1–P5 | 1,400 | 拟合标准化、更新模型权重 |
+| Validation | P6 | 280 | checkpoint选择与早停 |
+| Test | P7–P8 | 560 | 模型冻结后的正式评价 |
 
-人员完全不重叠；各集合均含四环境和七动作。训练shuffle只改变读取顺序，不改变划分。
-
-仅用1400个训练样本、每通道合并950个时间位置，以float64累积52通道均值及总体标准差（ddof=0），保存 `models/csi_normalizer.npz`。Train/Val/Test共用这一组固定参数。近零标准差阈值为1e-8，本次没有近零通道。Dataset执行 `(x-mean)/std` 后返回float32 `(52,950)`；Batch为 `(B,52,950)`，标签为int64。
-
-唯一 `LightweightCNN`：
+标准化只使用训练集，按通道累计均值和总体标准差（ddof=0）。三组人员不重叠，各组均含四个环境，因此这里是**跨人员**实验，不是留一环境评价。
 
 ```text
-Conv1d(52,64,k=3,padding=1) → ReLU → MaxPool1d(2)
-→ Conv1d(64,128,k=3,padding=1) → ReLU
-→ AdaptiveAvgPool1d(1) → Flatten → Linear(128,7)
+CSI amplitude (B, 52, 950)
+  → Conv1d(52, 64, kernel=3) → ReLU → MaxPool1d(2)
+  → Conv1d(64, 128, kernel=3) → ReLU
+  → AdaptiveAvgPool1d(1) → Flatten → Linear(128, 7)
 ```
 
-参数量 **35,655 = 10,048 + 24,704 + 903**。输出原始logits，交叉熵损失前不加Softmax。
+输出为logits，配合CrossEntropyLoss；不在损失计算前额外加入Softmax。实现见[src/model.py](src/model.py)。
 
-## 3. 正式冻结结果 / Frozen results
+## 已归档结果
 
-| 项目 | 结果 |
-|---|---|
-| Seed / Batch Size | 42 / 32 |
-| 优化器 / 学习率 / weight decay | Adam / 0.001 / 0 |
-| 损失 | CrossEntropyLoss |
-| 最大轮数 / patience | 40 / 10 |
-| 实际训练轮数 | 26，触发早停 |
-| checkpoint规则 | Val Accuracy优先；相同时Val Loss更低 |
-| 最佳Epoch | **16** |
-| 最佳Val Accuracy / Val Loss | **27.1429% / 2.353830** |
-| Test Accuracy | **26.4286%（148/560）** |
+| 指标或设置 | 结果 |
+|---|---:|
+| Test Accuracy | **26.4286%**（148/560） |
 | Test Macro-F1 | **0.257181** |
-| 最佳权重 | `models/formal_seed42/epoch_016.pt` |
-| 原运行GPU | NVIDIA GeForce RTX 3060 Laptop GPU |
+| 最佳Validation Accuracy | 27.1429% |
+| 最佳checkpoint | Epoch 16 |
+| 实际训练轮数 | 26（早停） |
+| Seed | 42 |
 
-测试结果已冻结，不因分数低而重选模型、重拟合标准化或重测。训练集表现改善、验证表现不足，存在明显泛化差距。
+来源：[测试指标](results/formal_seed42/test/test_metrics.json)、[训练记录](results/formal_seed42/metrics.csv)、[结果分析](results/formal_seed42/analysis.md)。checkpoint按Validation Accuracy选择，相同时比较Validation Loss，不按测试表现重选。
 
-- 正式训练记录：`results/formal_seed42/metrics.csv`（26轮）。
-- 正式测试：`results/formal_seed42/test/` 下的 `test_metrics.json`、`predictions.csv`、`confusion_matrix.csv`、`classification_report.csv`、`evaluation_metadata.json`。
-- 四张正式图：`figures/formal_seed42/`（每张PNG/PDF/SVG）。
-- 分析：`results/formal_seed42/analysis.md`。
-- 唯一保留的报告：[最终PDF](reports/wifi_csi_baseline_report_final.pdf)；可编辑源码及发布说明：[报告目录](reports/wifi_csi_baseline_report_final/RELEASE.md)。
+![Training and validation accuracy across epochs](figures/formal_seed42/accuracy_curve.png)
 
-`configs/baseline.yaml` 是 **2 Epoch Smoke Test**，输出在 `results/smoke_test/` 和 `models/smoke_test/`；`configs/formal_seed42.yaml` 才是正式配置。两者指标不能混用。正式模型只在验证改善时保存，因此没有Epoch26权重并非文件缺失。
+*训练与验证表现存在明显差距。当前基线的未见人员识别能力有限，不能据此声称已具备可靠部署能力。*
 
-## 4. 环境准备 / Environment
+![Confusion matrix on the fixed held-out participants](figures/formal_seed42/confusion_matrix.png)
 
-`environment.yml` 记录实测直接依赖，不包含本机prefix，不是已求解的跨平台锁文件。Python为conda-forge构建的3.11.16；核心科学计算包由pip安装。无须为本项目额外引入torchvision或torchaudio，代码未导入它们。
+正式结果保持原样，不因分数偏低重新选择模型或测试划分。也不与采用不同数据划分的外部项目直接排名。
 
-PyTorch实测 `2.14.0+cu126`、CUDA构建12.6，安装器记录为pip；原始安装索引和原轮子哈希没有保留。YAML选择当前可核实的[官方cu126索引](https://download.pytorch.org/whl/cu126/torch/)，其中有该版本的cp311 Windows x64轮子。这是可用来源核对，**不是对原安装来源的追溯证明，也不是安装成功验证**。
+## 快速开始
 
-准备顺序：
-
-1. 使用可用的Conda工具读取YAML，在独立环境中准备Python及pip依赖；不要覆盖正在使用的原环境。
-2. 若YAML无法解析CUDA轮子，停止并从已核实的官方来源取得精确的 `torch==2.14.0+cu126`、Python 3.11、Windows x64轮子，再单独安装；不得静默替换CPU版或其他版本。
-3. 核对驱动、PyTorch版本和CUDA可用性。训练和评价默认请求CUDA，也支持显式CPU或已记录的CPU回退；不再限制GPU型号。不同硬件的完整训练结果尚未验证，不保证逐位相同。
-4. 本次未安装依赖、未求解环境、未异机验证，因此不提供冒充已验证的环境创建命令。
-
-YAML中的 `pypdf==6.10.0`、`pdfplumber==0.11.9` 来自独立报告解释器的实测信息，原 `wifi-csi` 环境未安装这两个包。Notebook/JupyterLab用于学习，九个实验脚本均可脱离Notebook运行。
-
-PDF系统工具另行准备：XeLaTeX、ctex、相关LaTeX宏包、现有源码指定的宋体/黑体/Times New Roman/Arial/Consolas，以及Poppler页面渲染工具；不包含在Conda YAML中。源码使用可选Windows字体路径及Noto/Fandol回退；本阶段不重编正式PDF，跨系统编译尚待验证。
-
-## 5. 脚本职责与执行顺序 / Workflow
-
-以下从项目根目录运行。表中的历史执行形式对应本项目已完成阶段，本次发布维护没有重复训练或评价。**已有结果会被保护：有的脚本仅接受完全相同的旧输出，其余会拒绝覆盖；不是可在当前归档目录连续重跑的一键命令。**
-
-| 顺序 | 已有脚本 / 历史执行形式 | 职责与边界 |
-|---:|---|---|
-| 1 | `python -B scripts/build_manifest.py` | 按真实MAT文件名建立2240行清单并配对CSV；不读数组；已有输出相同才接受 |
-| 2 | `python -B scripts/create_split.py` | 按人员增加split列，不随机重划分；已有输出不同则拒绝 |
-| 3 | `python -B scripts/check_dataloader.py` | 读取真实单样本及Batch，检查shape/标签；会读取test样本，属于早期功能检查，不是正式准确率评价 |
-| 4 | `python -B scripts/check_model.py` | 真实train Batch前向/反向功能检查，无参数更新 |
-| 5 | `python -B scripts/check_numerics.py` | train Batch原尺度诊断；可用已有 `--normalizer` 参数检查标准化后尺度 |
-| 6 | `python -B scripts/fit_normalizer.py` | 只用train拟合固定参数；已存在normalizer时拒绝覆盖 |
-| 7 | `python -B scripts/run_experiment.py --config configs/baseline.yaml` | 2轮GPU Smoke Test；已有输出时停止 |
-| 8 | `python -B scripts/run_experiment.py --config configs/formal_seed42.yaml` | 固定正式训练；已有输出时停止 |
-| 9 | `scripts/evaluate.py`（历史正式测试入口） | 当前必须显式指定新输出；默认选用Epoch16，原正式测试目录永不写入 |
-| 10 | `python -B scripts/make_figures.py` | 从冻结CSV/JSON绘图，无MAT/网络推理；默认已有图表时停止 |
-
-独立复现入口现已补齐，冻结配置不改动；`--output-dir` 仅改变本次输出位置，训练权重保存到该目录的 `checkpoints/`。已有目录（即使为空）一律拒绝；原正式结果和模型目录始终受保护。
-
-本阶段实际执行通过的无训练/无推理预检：
-
-```powershell
-python -B scripts/run_experiment.py --config configs/formal_seed42.yaml --output-dir results/reproduction_check --device cpu --dry-run
-python -B scripts/evaluate.py --output-dir results/reproduction_eval --checkpoint models/formal_seed42/epoch_016.pt --device cpu --check-only
-python -B -m unittest discover -s tests -v
+```bash
+git clone https://github.com/wzhikun-helper/wifi-csi-har.git
+cd wifi-csi-har
 ```
 
-`--device cuda:N` 可选择GPU；CUDA不可用默认报错，只有 `--device cpu` 或 `--allow-cpu-fallback` 显式允许使用CPU。实际设备、GPU名称、PyTorch版本及回退状态写入运行来源记录，不能把CPU运行当作GPU结果。
+先按[复现指南](docs/REPRODUCIBILITY.md)准备环境；依赖声明见[environment.yml](environment.yml)，尚未完成跨机器安装验证。在已准备的环境中，可**不读取真实数据数组、不训练、不推理**地运行：
 
-上述预检不创建结果目录，不构造真实Dataset，不训练或推理。去掉预检开关才会进入真实运行，本阶段未执行。评价自己的复现模型还需 `--training-summary` 指向该训练运行的summary，checkpoint必须与其验证选模记录一致，不允许根据test表现任意替换。
-
-## 6. 无原始数据的复现边界 / Without raw data
-
-**可以做：** 阅读CSV、分析、笔记及PDF；核验已归档文件SHA256；使用固定数据片段、排版图副本和系统工具重编PDF。绘图逻辑不读MAT，可利用冻结预测和训练记录重建图表，但还要求Manifest/Split、normalizer及相关源码通过来源校验，并须选择不存在的新输出位置。
-
-**不能做：** 重新建立真实数据清单、核验MAT内容、拟合normalizer、运行真实DataLoader、重训或对原测试集进行新推理。重新绘图不等于重新测试。
-
-本次实际执行通过的只读发布核验入口（仅Python标准库，无MAT读取、无模型推理、无文件写入）：
-
-```powershell
+```bash
+python -B -m unittest discover -s tests -v
+python -B scripts/run_experiment.py --config configs/formal_seed42.yaml --output-dir results/readme_check_001 --device cpu --dry-run
+python -B scripts/evaluate.py --output-dir results/readme_eval_001 --checkpoint models/formal_seed42/epoch_016.pt --device cpu --check-only
 python -B reports/wifi_csi_baseline_report_final/verify_release.py
 ```
 
-它检查当前保留的报告、图表、来源记录与冻结实验文件，不要求已删除的旧报告仍存在。旧 `verify_layout.py`、`COMPILE.md` 及旧 provenance 保留为历史记录，**不作为清理后的当前运行入口**；以更新后的 `RELEASE.md` 和 `COMPILE.md` 为准。
+目标目录必须不存在；预检不创建结果目录。去掉预检开关会进入真实训练或评价，请先阅读[运行协议](reports/wifi_csi_baseline_report_final/PIPELINE_REPRODUCTION.md)，不要在正式归档目录重跑。
 
-## 7. 项目结构、Git与证据 / Structure and evidence
+## 数据与公开范围
+
+数据来自[AutoSmartGroup/ESP-Fi-HAR](https://github.com/AutoSmartGroup/ESP-Fi-HAR)，获取与使用遵循原作者说明。本仓库不分发原始MAT/CSV；授权数据应放在data/raw/ESP-Fi_dataset/并保留原目录名。
+
+七类动作是running、falling、walking、turning、jumping、squatting、waving，对应标签0–6。配对文件不是两个独立样本；不能从950个位置推断未经确认的采样率或持续时间。
+
+公开内容包括[样本元数据](results/dataset_manifest.csv)、[固定人员划分](results/dataset_split.csv)、训练记录、正式测试结果、[最佳权重](models/formal_seed42/epoch_016.pt)及[normalizer](models/csi_normalizer.npz)。其他历史checkpoint仅本地保留，不属于公开发布范围。
+
+## 报告与文档
+
+| 内容 | 入口 |
+|---|---|
+| 完整实验报告 | [6页PDF](reports/wifi_csi_baseline_report_final.pdf) · [LaTeX源码](reports/wifi_csi_baseline_report_final/main.tex) · [编译说明](reports/wifi_csi_baseline_report_final/COMPILE.md) |
+| CSI基础 | [Wi-Fi CSI学习笔记](notes/wifi_csi_notes.md) |
+| 时序深度学习 | [Conv1d与一维时序学习笔记](notes/deep_learning_1d_timeseries_notes.md) |
+| 环境、预处理与运行入口 | [复现指南](docs/REPRODUCIBILITY.md) · [完整协议](reports/wifi_csi_baseline_report_final/PIPELINE_REPRODUCTION.md) |
+| 实验来源与核验 | [发布说明](reports/wifi_csi_baseline_report_final/RELEASE.md) · [文档导航](docs/README.md) |
+
+## 目录结构
 
 ```text
-wifi-csi-har/
-├── README.md, environment.yml, .gitattributes, .gitignore
-├── data/raw/ESP-Fi_dataset/       # 不提交原始数据
-├── data/processed/               # 当前空目录
-├── src/                          # Dataset和唯一CNN
-├── scripts/                      # 九个实验/检查脚本
-├── tests/                        # 合成数据离线回归测试
-├── configs/                      # Smoke与正式配置
-├── models/                       # 固定normalizer；只放行最佳Epoch16权重
-├── results/                      # Manifest、Split、Smoke、正式冻结结果
-├── figures/formal_seed42/         # 正式图表和来源记录
-├── notes/                        # CSI与深度学习笔记
-├── notebooks/                    # 当前空目录
-└── reports/
-    ├── wifi_csi_baseline_report_final.pdf
-    └── wifi_csi_baseline_report_final/  # 源码、排版副本和provenance
+configs/                Smoke与正式实验配置
+src/                    Dataset、模型与安全运行模块
+scripts/                数据检查、训练、评价与绘图入口
+tests/                  临时合成数据测试
+results/                样本清单、人员划分与冻结结果
+models/                 训练集normalizer和正式最佳权重
+figures/formal_seed42/  训练曲线、混淆矩阵及分类结果
+reports/                正式报告、LaTeX源码及来源记录
+notes/                  CSI与Conv1d学习笔记
+docs/                   复现指南与文档导航
 ```
 
-仓库地址：[wzhikun-helper/wifi-csi-har](https://github.com/wzhikun-helper/wifi-csi-har)。原发布准备阶段未提交的说明属于历史记录；本次课程交付整理的验证范围见 [归档记录](docs/COURSE_DELIVERY_CLEANUP.md)，远程状态以实际Git提交为准。
+## 局限与复现边界
 
-`.gitattributes` 对冻结证据禁用文本换行转换，保留现有字节；只为已有README和.gitignore保留原先LF Blob/CRLF工作副本映射。不运行批量归一化或 `git add --renormalize`。`.gitignore` 保留原始数据及其他权重保护，仅允许 `models/formal_seed42/epoch_016.pt`；报告build/qa中间产物不提交，正式PDF、源码、图表和来源记录保留。
+- 仅一个seed、一次固定人员划分和两名测试人员，不能推断所有新人员上的效果。
+- 未验证跨环境、跨硬件或实际部署泛化；当前测试表现有限。
+- 新克隆可核验当前88项发布索引；历史47项中10个中间checkpoint仅本地保留。
+- 跨机器完整训练尚未验证；环境声明、功能测试和数值复现是不同层次的证据。
 
-按用户要求仅保留最终版本报告；旧版PDF和源码目录删除前，必要JSON/Markdown来源记录逐字节复制到最终目录的 `provenance/history/`。这些记录中的旧路径和旧哈希描述历史状态，不代表旧报告仍应存在。最终PDF、TeX、固定数据片段、正式图表和冻结结果未变。
-
-## 8. 限制 / Limitations
-
-只有一个seed、一次固定人员划分和两名测试人员，不能推断所有未见人员上的效果。四个环境均进入各集合，本实验是**跨人员**而非留一环境评价；未验证跨环境泛化、硬件迁移或真实部署可靠性。
-
-未完成跨电脑安装和端到端复现；新入口保留防覆盖规则，并将运行路径和设备与冻结实验配置分开记录；不再限制GPU型号。原始数据许可及再分发条件应由使用者查阅作者说明；本仓库不重新分发数据。当前低测试分数如实保留，不作为重新选择模型的依据。
+本仓库尚未指定开源许可证；代码与原始数据的许可需分别确认，不自动继承参考项目的许可。
